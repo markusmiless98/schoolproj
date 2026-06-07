@@ -1,0 +1,24 @@
+﻿@using PublicSchoolProj.Models
+@model UserPage
+@{
+	ViewData["Title"] = "Page";
+}
+
+<div class="user-post">
+	<h2>@Model.title</h2>
+	<p>@Model.description</p>
+	@foreach (var _page in Model.GetBlocks())
+	{
+		<div class="page-block width_@_page.Width">
+			@if (_page._picture != null)
+			{
+				<div class="picture-holder">
+					<img src="~/img/@_page._picture.FileName" />
+				</div>
+			}
+			<p>
+				@_page.Text
+			</p>
+		</div>
+	}
+</div>

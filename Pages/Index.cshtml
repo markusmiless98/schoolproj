@@ -1,0 +1,25 @@
+﻿@page
+@inject SignInManager<IdentityUser> SignInManager
+@addTagHelper *, ViewComponents
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+    Model.PageManager = new Models.UserPageManager();
+}
+<div class="text-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div>
+            <p>Here you can make a page</p>
+            <form method="post" enctype="multipart/form-data">
+                <input type="file" class="form-control" name="UploadedImage" />
+                <textarea cols="20" rows="3" name="Description"></textarea>
+                <input id="Submit" type="submit" value="submit" />
+            </form>
+        </div>
+    }
+    @if (Model._UserPage != null)
+    {
+        <partial name="CustomPage" for="@Model._UserPage" />
+    }
+</div>
