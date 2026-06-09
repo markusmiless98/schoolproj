@@ -1,15 +1,14 @@
-﻿@using PublicSchoolProj.Models
-@model UserPage
+﻿@page
+@model PublicSchoolProj.Pages.Admin.PreviewModel
+
 @{
-	ViewData["Title"] = "Page";
+	ViewData["Title"] = "Preview";
 }
 
 <div class="user-post">
-	<div class="user-page-top">
-		<h2>@Model.title</h2>
-		<p>@Model.description</p>
-	</div>
-	@foreach (var _page in Model.GetBlocks())
+	<h2>@Model.UserPage.title</h2>
+	<p>@Model.UserPage.description</p>
+	@foreach (var _page in Model.UserPage.GetBlocks())
 	{
 		<div class="page-block width_@_page.Width">
 			@if (_page.Title != null)
@@ -22,7 +21,6 @@
 			{
 				<div class="picture-holder">
 					<img src="~/img/@_page._picture.FileName" />
-					se
 				</div>
 			}
 			else

@@ -50,6 +50,27 @@ namespace PublicSchoolProj.Models
             return _blocks;
         }
 
+        public UserPageBlock GetBlock(int id)
+        {
+            if (_blocks == null)
+            {
+                _blocks = new List<UserPageBlock>();
+                _blocks.Add(new UserPageBlock());
+                return _blocks[0];
+            }
+
+            if (_blocks.Count <= id)
+            {
+                return _blocks[^1];
+            }
+            if (id < 0)
+            {
+                return _blocks[0];
+            }
+
+            return _blocks[id];
+        }
+
         private List<UserPageBlock> BlockSort(List<UserPageBlock> _list)
         {
             List<UserPageBlock> week = _list;

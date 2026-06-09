@@ -53,7 +53,21 @@ namespace PublicSchoolProj.Pages.Admin
             if (userpage != null)
             {
                 UserPage = userpage;
+
+                // Clean up later
+                List<UserPageBlock> _tbd = new List<UserPageBlock>();
+                foreach (var item in _context.UserBlockPage)
+                {
+                    if (item.UserPageId == UserPage.Id)
+                    {
+                        _tbd.Add(item);
+                    }
+                }
+
+                _context.UserBlockPage.RemoveRange(_tbd);
+
                 _context.UserPage.Remove(UserPage);
+
                 await _context.SaveChangesAsync();
             }
 

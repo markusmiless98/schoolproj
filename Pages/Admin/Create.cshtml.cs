@@ -30,12 +30,21 @@ namespace PublicSchoolProj.Pages.Admin
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            UserPage._blocks.Add(new UserPageBlock());
+            if (UserPage.userId == null)
+            {
+                UserPage.userId = _context.UserPage.Count() + 1;
+                UserPage.GetBlock(0).UserPageId = UserPage.userId;
+            }
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
+
             _context.UserPage.Add(UserPage);
+
+            _context.UserBlockPage.AddRange(UserPage._blocks);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

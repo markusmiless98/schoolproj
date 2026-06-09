@@ -2,7 +2,7 @@
 @model PublicSchoolProj.Pages.Admin.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Page Index";
 }
 
 <h1>Index</h1>
@@ -25,9 +25,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.UserPage[0].views)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserPage[0].links)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -47,9 +44,7 @@
                 @Html.DisplayFor(modelItem => item.views)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.links)
-            </td>
-            <td>
+                <a asp-page="./Preview" asp-route-id="@item.Id">Preview</a> |
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>

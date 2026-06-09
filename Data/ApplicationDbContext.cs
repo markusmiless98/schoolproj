@@ -11,5 +11,7 @@ namespace PublicSchoolProj.Data
         {
         }
         public DbSet<PublicSchoolProj.Models.UserPage> UserPage { get; set; } = default!;
+
+        public DbSet<PublicSchoolProj.Models.UserPageBlock> UserBlockPage { get; set; } = default!;
     }
 }

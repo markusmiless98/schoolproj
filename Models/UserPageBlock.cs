@@ -5,16 +5,17 @@ namespace PublicSchoolProj.Models
     public class UserPageBlock
     {
         public int Id { get; set; }
+        public int? UserPageId { get; set; }
         public int Column { get; set; } = 0;
         public int Row { get; set; } = 0;
 
         public int Width { get; set; } = 1;
 
-        public string Title { get; set; }
-        public string Text { get; set; }
+        public string? Title { get; set; }
+        public string? Text { get; set; }
 
         [NotMapped]
-        public IFormFile _picture { get; set; }
+        public IFormFile? _picture { get; set; }
 
         public bool IsValidBlock()
         {
@@ -33,6 +34,30 @@ namespace PublicSchoolProj.Models
         public int GetPositionValue()
         {
             return Row * 5 + Column;
+        }
+
+        public virtual void Overwrite(UserPageBlock _over)
+        {
+            if (_over.Title.Length > 0)
+            {
+                Title = _over.Title;
+            }
+            if (_over.Text.Length > 0)
+            {
+                Text = _over.Text;
+            }
+            if (_over._picture != null)
+            {
+                _picture = _over._picture;
+            }
+            if (_over.Row != Row)
+            {
+                Row = _over.Row;
+            }
+            if (_over.Column != Column)
+            {
+                Column = _over.Column;
+            }
         }
     }
 }
