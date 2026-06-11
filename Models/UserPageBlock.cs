@@ -6,6 +6,7 @@ namespace PublicSchoolProj.Models
     {
         public int Id { get; set; }
         public int? UserPageId { get; set; }
+        public string? ImagePath { get; set; } = "";
         public int Column { get; set; } = 0;
         public int Row { get; set; } = 0;
 
@@ -14,8 +15,9 @@ namespace PublicSchoolProj.Models
         public string? Title { get; set; }
         public string? Text { get; set; }
 
+
         [NotMapped]
-        public IFormFile? _picture { get; set; }
+        public IFormFile? _picture { get; set; } // Might get removed later lol
 
         public bool IsValidBlock()
         {
@@ -38,17 +40,33 @@ namespace PublicSchoolProj.Models
 
         public virtual void Overwrite(UserPageBlock _over)
         {
-            if (_over.Title.Length > 0)
+            if (_over == null) return;
+
+            if (_over.Title != null)
             {
-                Title = _over.Title;
+                if (_over.Title.Length > 0)
+                {
+                    Title = _over.Title;
+                }
             }
-            if (_over.Text.Length > 0)
+            if (_over.Text != null)
             {
-                Text = _over.Text;
+                if (_over.Text.Length > 0)
+                {
+                    Text = _over.Text;
+                }
+            }
+            if (_over.ImagePath != null)
+            {
+                if (_over.ImagePath.Length > 0)
+                {
+                    ImagePath = _over.ImagePath;
+                }
             }
             if (_over._picture != null)
             {
                 _picture = _over._picture;
+                ImagePath = _picture.FileName;
             }
             if (_over.Row != Row)
             {

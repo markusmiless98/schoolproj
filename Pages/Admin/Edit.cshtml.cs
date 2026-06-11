@@ -24,6 +24,8 @@ namespace PublicSchoolProj.Pages.Admin
         public UserPage UserPage { get; set; } = default!;
         [BindProperty]
         public IList<UserPageBlock> UserPageBlocks { get; set; } = default!;
+        [BindProperty]
+        public IFormFile UploadedImage { get; set; }
 
         int _id { get; set; } = default!;
 
@@ -34,14 +36,19 @@ namespace PublicSchoolProj.Pages.Admin
                 return NotFound();
             }
 
-            var userpage =  await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
-            if (userpage == null)
+            await GetUserPageById((int)id);
+            if (UserPage == null)
             {
                 return NotFound();
             }
-            UserPage = userpage;
-
-            UserPageBlocks = await _context.UserBlockPage.Where(e => e.UserPageId == id).ToListAsync();
+            
+            foreach (var item in UserPageBlocks)
+            {
+                if (!UserPage.GetBlocks().Contains(item))
+                {
+                    UserPage.GetBlocks().Add(item);
+                }
+            }
 
             if (id != null)
             {
@@ -49,6 +56,18 @@ namespace PublicSchoolProj.Pages.Admin
             }
 
             return Page();
+        }
+
+        private async Task GetUserPageById(int id)
+        {
+            var userpage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
+            if (userpage == null)
+            {
+                throw new Exception("Failed to load the user page");
+            }
+            UserPage = userpage;
+
+            UserPageBlocks = await _context.UserBlockPage.Where(e => e.UserPageId == id).ToListAsync();
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -78,11 +97,14 @@ namespace PublicSchoolProj.Pages.Admin
                 }
             }
 
-            return RedirectToPage("./Edit?id=" + GetUserPage());
+            return Redirect(GetUserPage());
         }
+
 
         [BindProperty]
         public UserPageBlock UserPageBlock { get; set; } = default!;
+
+
 
         public async Task<IActionResult> OnPostBlockAsync(int id)
         {
@@ -100,7 +122,7 @@ namespace PublicSchoolProj.Pages.Admin
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Edit?id=" + GetUserPage());
+            return Redirect(GetUserPage());
         }
         public async Task<IActionResult> OnPostDeleteBlockAsync(int id, int target)
         {
@@ -139,44 +161,84 @@ namespace PublicSchoolProj.Pages.Admin
             }
 
 
-            return RedirectToPage("./Edit?id=" + GetUserPage());
+            return Redirect(GetUserPage());
         }
 
-        public async Task<IActionResult> OnPostEditBlockAsync(UserPageBlock model, int id)
+
+        public async Task OnPostAddPicAsync(int id, int target)
         {
-            if (model == null)
+            if (UploadedImage == null)
             {
-                return NotFound();
+                throw new InvalidOperationException("NO PICTURE");
             }
 
-            var userpageblock = await _context.UserBlockPage.FindAsync(model.Id);
+            await GetUserPageById(id);
+
+            var userpageblock = await _context.UserBlockPage.FindAsync(UserPageBlocks[target].Id);
+
             if (userpageblock != null)
             {
                 UserPageBlock = userpageblock;
-                UserPageBlock.Overwrite(model);
+
+                string _txt = UploadedImage.FileName;
+                var file = "./wwwroot/img/" + _txt;
+                using (var fileStream = new FileStream(file, FileMode.OpenOrCreate))
+                {
+                    await UploadedImage.CopyToAsync(fileStream);
+                    UserPageBlocks[target]._picture = UploadedImage;
+                }
+                UserPageBlocks[target].ImagePath = file;
+            
+                UserPageBlock.Overwrite(UserPageBlocks[target]);
+                _context.Attach(UserPageBlock).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
             }
+            else
+            {
+                NotFound();
+            }
+        }
+
+        public async Task<IActionResult> OnPostEditBlockAsync(int id, int target)
+        {
+            UserPage = await _context.UserPage.FindAsync(id);
+            if (UserPage == null)
+            {
+                return NotFound();
+            }
+            UserPage.Id = id;
+
+            var userpageblock = await _context.UserBlockPage.FindAsync(UserPageBlocks[target].Id);
+            
+            if (userpageblock != null)
+            {
+                UserPageBlock = userpageblock;
+
+                if (UploadedImage != null)
+                {
+                    string _txt = UploadedImage.FileName;
+                    var file = "./wwwroot/img/" + _txt;
+                    using (var fileStream = new FileStream(file, FileMode.OpenOrCreate))
+                    {
+                        await UploadedImage.CopyToAsync(fileStream);
+                        UserPageBlocks[target]._picture = UploadedImage;
+                    }
+                    UserPageBlocks[target].ImagePath = file;
+                }
+                
+                UserPageBlock.Overwrite(UserPageBlocks[target]);
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserPageBlockExists(UserPageBlock.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _context.Attach(UserPageBlock).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Edit?id=" + id);
+            return Redirect(GetUserPage());
         }
 
         public int GetNewBlockId()
@@ -196,17 +258,18 @@ namespace PublicSchoolProj.Pages.Admin
 
         private string GetUserPage()
         {
-            if (_id != null)
-            {
-                return _id.ToString();
-            }
-            else if (UserPage != null)
+            string _temp = "/Admin/Edit?id=";
+            if (UserPage != null)
             {
                 _id = UserPage.Id;
-                return _id.ToString();
+                return _temp + _id.ToString();
+            }
+            else if (_id != null)
+            {
+                return _temp + _id.ToString();
             }
 
-            return "0";
+            return _temp + "0";
         }
     }
 }

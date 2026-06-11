@@ -17,10 +17,10 @@
 					@_page.Title
 				</h3>
 			}
-			@if (_page._picture != null)
+			@if (_page.ImagePath != null)
 			{
 				<div class="picture-holder">
-					<img src="~/img/@_page._picture.FileName" />
+					<img src="~/img/@_page.ImagePath" />
 				</div>
 			}
 			else

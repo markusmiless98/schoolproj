@@ -10,10 +10,10 @@
 	@foreach (var _page in Model.GetBlocks())
 	{
 		<div class="page-block width_@_page.Width">
-			@if (_page._picture != null)
+			@if (_page.ImagePath != null)
 			{
 				<div class="picture-holder">
-					<img src="~/img/@_page._picture.FileName" />
+					<img src="~/img/@_page.ImagePath" />
 				</div>
 			}
 			<p>

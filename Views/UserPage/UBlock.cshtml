@@ -1,0 +1,22 @@
+﻿@using PublicSchoolProj.Models
+@addTagHelper *, RazorPages
+@model UserPageBlock
+@{
+	ViewData["Title"] = "Page";
+}
+
+<div class="user-post">
+	<h2>@Model.Title</h2>
+	<p>@Model.Text</p>
+	<div class="page-block width_@Model.Width">
+		@if (Model.ImagePath != null)
+		{
+		<div class="picture-holder">
+				<img src="~/img/@Model.ImagePath" />
+		</div>
+		}
+		<p>
+			@Model.Text
+		</p>
+	</div>
+</div>

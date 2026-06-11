@@ -52,7 +52,7 @@ namespace PublicSchoolProj.Models
 
         public UserPageBlock GetBlock(int id)
         {
-            if (_blocks == null)
+            if (_blocks == null || _blocks.Count < 1)
             {
                 _blocks = new List<UserPageBlock>();
                 _blocks.Add(new UserPageBlock());
@@ -61,7 +61,7 @@ namespace PublicSchoolProj.Models
 
             if (_blocks.Count <= id)
             {
-                return _blocks[^1];
+                return _blocks[_blocks.Count - 1];
             }
             if (id < 0)
             {

@@ -12,8 +12,8 @@ using PublicSchoolProj.Data;
 namespace PublicSchoolProj.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260608083602_UserPageBlock")]
-    partial class UserPageBlock
+    [Migration("20260610101344_UserPage")]
+    partial class UserPage
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -266,6 +266,9 @@ namespace PublicSchoolProj.Data.Migrations
 
                     b.Property<int>("Column")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Row")
                         .HasColumnType("int");

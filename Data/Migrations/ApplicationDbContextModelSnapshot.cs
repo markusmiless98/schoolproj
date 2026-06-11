@@ -264,6 +264,9 @@ namespace PublicSchoolProj.Data.Migrations
                     b.Property<int>("Column")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Row")
                         .HasColumnType("int");
 

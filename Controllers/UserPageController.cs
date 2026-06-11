@@ -17,5 +17,12 @@ namespace PublicSchoolProj.Controllers
 
             return View(_user);
         }
+
+        public IActionResult UBlock(UserPageBlock _block)
+        {
+            if (_block == null) return NotFound();
+
+            return View(_block);
+        }
     }
 }
