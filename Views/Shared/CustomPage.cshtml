@@ -20,16 +20,15 @@
 						@_page.Title
 					</h3>
 				}
-				@if (_page.ImagePath != null)
+				@if (_page.IsImagePathValid())
 				{
 					<div class="picture-holder">
 						<img src="~/img/@_page.ImagePath" />
-						se
 					</div>
 				}
-				else
+				else if (_page.ImagePath != null && _page.ImagePath.Length > 1)
 				{
-					<p>NO PIC</p>
+					<p>Invalid Pic</p>
 				}
 				<p>
 					@_page.Text

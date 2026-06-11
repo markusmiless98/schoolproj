@@ -58,7 +58,7 @@ namespace PublicSchoolProj.Pages.Admin
             return Page();
         }
 
-        private async Task GetUserPageById(int id)
+        private async Task GetUserPageById(int id, bool get_blocks = true)
         {
             var userpage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
             if (userpage == null)
@@ -67,7 +67,10 @@ namespace PublicSchoolProj.Pages.Admin
             }
             UserPage = userpage;
 
-            UserPageBlocks = await _context.UserBlockPage.Where(e => e.UserPageId == id).ToListAsync();
+            if (get_blocks == true)
+            {
+                UserPageBlocks = await _context.UserBlockPage.Where(e => e.UserPageId == id).ToListAsync();
+            }
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -174,7 +177,7 @@ namespace PublicSchoolProj.Pages.Admin
 
             await GetUserPageById(id);
 
-            var userpageblock = await _context.UserBlockPage.FindAsync(UserPageBlocks[target].Id);
+            var userpageblock = await _context.UserBlockPage.FindAsync(target);
 
             if (userpageblock != null)
             {
@@ -185,12 +188,12 @@ namespace PublicSchoolProj.Pages.Admin
                 using (var fileStream = new FileStream(file, FileMode.OpenOrCreate))
                 {
                     await UploadedImage.CopyToAsync(fileStream);
-                    UserPageBlocks[target]._picture = UploadedImage;
+                    UserPageBlock._picture = UploadedImage;
                 }
-                UserPageBlocks[target].ImagePath = file;
-            
-                UserPageBlock.Overwrite(UserPageBlocks[target]);
-                _context.Attach(UserPageBlock).State = EntityState.Modified;
+                UserPageBlock.ImagePath = file;
+                
+                userpageblock.Overwrite(UserPageBlock);
+                _context.Attach(userpageblock).State = EntityState.Modified;
 
                 await _context.SaveChangesAsync();
             }
@@ -202,41 +205,29 @@ namespace PublicSchoolProj.Pages.Admin
 
         public async Task<IActionResult> OnPostEditBlockAsync(int id, int target)
         {
-            UserPage = await _context.UserPage.FindAsync(id);
-            if (UserPage == null)
+            await GetUserPageById(id, false);
+
+            var userpageblock = await _context.UserBlockPage.FindAsync(target);
+
+            userpageblock.Overwrite(UserPageBlock);
+
+            _context.Attach(userpageblock).State = EntityState.Modified;
+
+            try
             {
-                return NotFound();
+                await _context.SaveChangesAsync();
             }
-            UserPage.Id = id;
-
-            var userpageblock = await _context.UserBlockPage.FindAsync(UserPageBlocks[target].Id);
-            
-            if (userpageblock != null)
+            catch (DbUpdateConcurrencyException)
             {
-                UserPageBlock = userpageblock;
-
-                if (UploadedImage != null)
+                if (!UserPageBlockExists(UserPageBlock.Id))
                 {
-                    string _txt = UploadedImage.FileName;
-                    var file = "./wwwroot/img/" + _txt;
-                    using (var fileStream = new FileStream(file, FileMode.OpenOrCreate))
-                    {
-                        await UploadedImage.CopyToAsync(fileStream);
-                        UserPageBlocks[target]._picture = UploadedImage;
-                    }
-                    UserPageBlocks[target].ImagePath = file;
+                    return NotFound();
                 }
-                
-                UserPageBlock.Overwrite(UserPageBlocks[target]);
+                else
+                {
+                    throw;
+                }
             }
-
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.Attach(UserPageBlock).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
 
             return Redirect(GetUserPage());
         }

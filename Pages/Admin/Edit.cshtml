@@ -90,52 +90,76 @@
                     <input type="submit" value="Create" asp-page-handler="block" asp-route-id="@Model.UserPage.Id" class="btn btn-primary" />
                 </div>
             </form>
+            <hr />
             int i = 0;
             @foreach (var block in Model.UserPageBlocks)
             {
+                @if (block.ImagePath == null)
+                {
                     <div class="block-pic">
                         <form method="post" enctype="multipart/form-data">
                             <input type="file" class="form-control" name="UploadedImage" />
                             <input asp-page-handler="AddPic"
-                                asp-route-id="@Model.UserPage.Id"
-                                   asp-route-target="@i" 
+                                   asp-route-id="@Model.UserPage.Id"
+                                   asp-route-target="@i"
                                    id="Submit" type="submit" value="submit" />
                         </form>
-                </div>
+                    </div>
+                }
+                else if (block.ImagePath.Length < 2)
+                {
+                    <div class="block-pic">
+                        <form method="post" enctype="multipart/form-data">
+                            <input type="file" class="form-control" name="UploadedImage" />
+                            <input asp-page-handler="AddPic"
+                                   asp-route-id="@Model.UserPage.Id"
+                                   asp-route-target="@i"
+                                   id="Submit" type="submit" value="submit" />
+                        </form>
+                    </div>
+                }
+                else if (block.IsImagePathValid())
+                {
+                    <div class="form-group one-row">
+                        <img src="~/img/@block.ImagePath" class="small-pic-preview" />
+                        <form method="post">
+                            <form method="post" enctype="multipart/form-data">
+                                <input type="file" class="form-control" name="UploadedImage" />
+                                <input asp-page-handler="AddPic"
+                                        asp-route-id="@Model.UserPage.Id"
+                                        asp-route-target="@i"
+                                        id="Submit" type="submit" value="Replace" />
+                            </form>
+                        </form>
+                    </div>
+                }
                 <form method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" value="@Model.UserPage" asp-for="UserPage" />
-                    <input type="hidden" value="@block.Id" asp-for="UserPageBlocks[i].Id" />
-                    <input type="hidden" value="@Model.UserPage.Id" asp-for="UserPageBlocks[i].UserPageId" />
-                    <input type="hidden" value="1" asp-for="UserPageBlocks[i].Row" />
-                    <input type="hidden" value="1" asp-for="UserPageBlocks[i].Column" />
-                    <div class="block-pic">
-                        <label asp-for="UserPageBlocks[i]._picture" class="control-label"></label>
-                        <input class="form-control" asp-for="UserPageBlocks[i].ImagePath" />
-                        @if (block.ImagePath != null)
-                        {
-                            @if (block.ImagePath.Length > 0)
-                            {
-                                <img src="~/img/@block.ImagePath" class="small-pic-preview" />
-                            }
-                        }
-                    </div>
+                    <input type="hidden" value="@Model.UserPageBlocks[i].Id" asp-for="UserPageBlock"/>
+                    <input type="hidden" value="@block.Id" asp-for="UserPageBlocks" />
+                    <input type="hidden" value="@Model.UserPage.Id" asp-for="UserPageBlock.UserPageId" />
+                    <input type="hidden" value="1" asp-for="UserPageBlock.Row" />
+                    <input type="hidden" value="1" asp-for="UserPageBlock.Column" />
+                    <input type="hidden" value="@block._picture" asp-for="UserPageBlock._picture" />
+                    <input type="hidden" value="@block.ImagePath" asp-for="UserPageBlock.ImagePath" />
+
 
                     <div class="form-group">
-                        <label asp-for="UserPageBlocks[i].Title" class="control-label"></label>
-                        <input asp-for="UserPageBlocks[i].Title" value="@block.Title" class="form-control" />
-                        <span asp-validation-for="UserPageBlocks[i].Title" class="text-danger"></span>
+                        <label asp-for="UserPageBlock.Title" class="control-label"></label>
+                        <input asp-for="UserPageBlock.Title" value="@block.Title" class="form-control" />
+                        <span asp-validation-for="UserPageBlock.Title" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="UserPageBlocks[i].Text" class="control-label"></label>
-                        <input asp-for="UserPageBlocks[i].Text" class="form-control" />
-                        <span asp-validation-for="UserPageBlocks[i].Text" class="text-danger"></span>
+                        <label asp-for="UserPageBlock.Text" class="control-label"></label>
+                        <input asp-for="UserPageBlock.Text" value="@block.Text" class="form-control" />
+                        <span asp-validation-for="UserPageBlock.Text" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         
                         <input type="submit" asp-page-handler="EditBlock"
                             asp-route-id="@Model.UserPage.Id"
-                            asp-route-target="@i"
+                            asp-route-target="@block.Id"
                             value="Update" class="btn btn-primary" />
                     </div>
                     @if (Model.UserPageBlocks.Count > 1)

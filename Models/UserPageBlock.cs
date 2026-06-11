@@ -12,8 +12,8 @@ namespace PublicSchoolProj.Models
 
         public int Width { get; set; } = 1;
 
-        public string? Title { get; set; }
-        public string? Text { get; set; }
+        public string? Title { get; set; } = "";
+        public string? Text { get; set; } = "";
 
 
         [NotMapped]
@@ -36,6 +36,12 @@ namespace PublicSchoolProj.Models
         public int GetPositionValue()
         {
             return Row * 5 + Column;
+        }
+
+        public virtual void FixIfBroken()
+        {
+            if (Title == null) Title = "";
+            if (Text == null) Text = "";
         }
 
         public virtual void Overwrite(UserPageBlock _over)
@@ -76,6 +82,24 @@ namespace PublicSchoolProj.Models
             {
                 Column = _over.Column;
             }
+        }
+        public bool IsImagePathValid()
+        {
+            string _path = ImagePath;
+
+            if (_path == null) return false;
+            if (_path.Length < 3) return false;
+            if (!_path.EndsWith(".png") && !_path.EndsWith(".jpg"))
+            {
+                return false;
+            }
+            var filePath = "~/img/" + _path;
+            // TBA; Check if gotten permission to check for local files later
+            if (Path.GetFileName(_path) != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
