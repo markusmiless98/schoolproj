@@ -23,6 +23,7 @@ namespace PublicSchoolProj.Models
         {
             if (userId == null) return false;
             if (description == null && _pictures == null && _blocks == null) return false;
+
             int _length = 0;
             if (description != null)
             {
@@ -48,6 +49,73 @@ namespace PublicSchoolProj.Models
             _blocks = BlockSort(_blocks);
 
             return _blocks;
+        }
+
+        public List<int> GetLinks()
+        {
+            List<int> _ints = new List<int>();
+            if (links == null) return _ints;
+
+            foreach (var item in links)
+            {
+                int x;
+                if (int.TryParse(item, out x))
+                {
+                    _ints.Add(x);
+                }
+            }
+
+            return _ints;
+        }
+
+        public void AddLinks(string _list = null)
+        {
+            if (links == null)
+            {
+                links = new List<string>();
+            }
+            if (links.Count < 3)
+            {
+                if (_list != null)
+                {
+                    links.Add(_list);
+                }
+                else
+                {
+                    links.Add("0");
+                }
+            }
+            if (links.Count > 3)
+            {
+                links.RemoveRange(3, links.Count - 1);
+            }
+        }
+        public bool RemoveLatestLinkById(int _id)
+        {
+            if (links == null || _id == null)
+            {
+                return false;
+            }
+            if (links.Count < 1 || _id < 0)
+            {
+                return false;
+            }
+            List<int> _list = GetLinks();
+
+            if (_id >= _list.Count)
+            {
+                return false;
+            }
+            else
+            {
+                _list.RemoveAt(_id);
+                links = new List<string>();
+                foreach (var item in _list)
+                {
+                    links.Add(item.ToString());
+                }
+            }
+            return true;
         }
 
         public UserPageBlock GetBlock(int id)

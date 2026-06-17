@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Humanizer.Localisation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -29,6 +30,8 @@ namespace PublicSchoolProj.Pages.Admin
 
         int _id { get; set; } = default!;
 
+        public List<SelectListItem> _linkOptions { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -42,13 +45,7 @@ namespace PublicSchoolProj.Pages.Admin
                 return NotFound();
             }
             
-            foreach (var item in UserPageBlocks)
-            {
-                if (!UserPage.GetBlocks().Contains(item))
-                {
-                    UserPage.GetBlocks().Add(item);
-                }
-            }
+            _linkOptions = await GetListOfItems();
 
             if (id != null)
             {
@@ -58,29 +55,104 @@ namespace PublicSchoolProj.Pages.Admin
             return Page();
         }
 
+        public async Task<List<SelectListItem>> GetListOfItems()
+        {
+            if (_linkOptions != null) return _linkOptions;
+
+            return await _context.UserPage.Select(a =>
+            new SelectListItem
+            {
+                Value = a.Id.ToString(),
+                Text = a.title
+            }).ToListAsync();
+        }
+
+        public string GetTitleFromLink(string _str)
+        {
+            if (_linkOptions != null)
+            {
+                foreach (var item in _linkOptions)
+                {
+                    if (item.Value == _str)
+                    {
+                        return item.Text;
+                    }
+                }
+            }
+
+
+            return null;
+        }
+
         private async Task GetUserPageById(int id, bool get_blocks = true)
         {
             var userpage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
             if (userpage == null)
             {
-                throw new Exception("Failed to load the user page");
+                throw new Exception("Failed to load the user page with ID " + id);
             }
             UserPage = userpage;
 
             if (get_blocks == true)
             {
-                UserPageBlocks = await _context.UserBlockPage.Where(e => e.UserPageId == id).ToListAsync();
+                await GetUserBlockPageById(id);
             }
+        }
+
+        private async Task GetUserBlockPageById(int id)
+        {
+            UserPageBlocks = await _context.UserBlockPage.Where(e => e.UserPageId == id).ToListAsync();
+            if (UserPageBlocks == null)
+            {
+                throw new Exception("Failed to load the user blocks from page with ID " + id);
+            }
+            else if (UserPage != null)
+            {
+                foreach (var item in UserPageBlocks)
+                {
+                    if (!UserPage.GetBlocks().Contains(item))
+                    {
+                        UserPage.GetBlocks().Add(item);
+                    }
+                }
+            }
+        }
+
+        public async Task<PreviewModel> MakePreview()
+        {
+            PreviewModel _prev = new PreviewModel(_context);
+            await _prev.OnGetAsync(UserPage.Id);
+            return _prev;
+        }
+
+        public async Task<UserPage> PreviewUserPage()
+        {
+            var _prev = await _context.UserPage.Where(m => m.Id == UserPage.Id).FirstAsync();
+
+            if (_prev == null) return null;
+
+            if (_linkOptions != null)
+            {
+                int i = 0;
+                while (i < _prev.links.Count)
+                {
+                    string _temp = _linkOptions.FirstOrDefault(e => e.Value == _prev.links[i]).Text;
+                    if (_temp != null)
+                    {
+                        _prev.links[i] = _temp;
+                    }
+                    i++;
+                }
+            }
+
+            return _prev;
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            await GetUserBlockPageById(UserPage.Id);
 
             _context.Attach(UserPage).State = EntityState.Modified;
 
@@ -108,14 +180,12 @@ namespace PublicSchoolProj.Pages.Admin
         public UserPageBlock UserPageBlock { get; set; } = default!;
 
 
-
         public async Task<IActionResult> OnPostBlockAsync(int id)
         {
             UserPageBlock _block = new UserPageBlock();
             _block.UserPageId = UserPage.userId;
 
             UserPage.Id = id;
-
 
 
             UserPage._blocks.Add(_block);
@@ -129,12 +199,7 @@ namespace PublicSchoolProj.Pages.Admin
         }
         public async Task<IActionResult> OnPostDeleteBlockAsync(int id, int target)
         {
-            var userpage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
-            if (userpage == null)
-            {
-                return NotFound();
-            }
-            UserPage = userpage;
+            await GetUserPageById(id, false);
 
             UserPage.GetBlocks().Clear();
             List<UserPageBlock> _blocks = new List<UserPageBlock>();
@@ -177,7 +242,13 @@ namespace PublicSchoolProj.Pages.Admin
 
             await GetUserPageById(id);
 
-            var userpageblock = await _context.UserBlockPage.FindAsync(target);
+            var userblock = UserPage.GetBlock(target);
+
+            if (userblock == null)
+            {
+                NotFound();
+            }
+            var userpageblock = await _context.UserBlockPage.Where(m => m.Id == userblock.Id).FirstOrDefaultAsync();
 
             if (userpageblock != null)
             {
@@ -195,11 +266,27 @@ namespace PublicSchoolProj.Pages.Admin
                 userpageblock.Overwrite(UserPageBlock);
                 _context.Attach(userpageblock).State = EntityState.Modified;
 
-                await _context.SaveChangesAsync();
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserPageBlockExists(userpageblock.Id))
+                    {
+                        NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
             else
             {
                 NotFound();
+                throw new Exception("W");
             }
         }
 
@@ -231,11 +318,90 @@ namespace PublicSchoolProj.Pages.Admin
 
             return Redirect(GetUserPage());
         }
-
-        public int GetNewBlockId()
+        public async Task<IActionResult> OnPostLinkAsync(int id)
         {
+            await GetUserPageById(id, false);
 
-            return _context.UserBlockPage.Count() + 1;
+            UserPage.AddLinks();
+
+            _context.Attach(UserPage.links).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserPageExists(UserPage.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Redirect(GetUserPage());
+        }
+
+        public async Task<ActionResult> OnPostLinkDeleteAsync(int id, int target)
+        {
+            await GetUserPageById(id, false);
+
+            int i = UserPage.GetLinks().Count;
+
+            if (!UserPage.RemoveLatestLinkById(target))
+            {
+                return NotFound();
+            }
+
+            if (i == UserPage.GetLinks().Count)
+            {
+                throw new ArgumentException("Delete failed to occur, contact administrator");
+            }
+            
+            _context.Attach(UserPage).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserPageExists(UserPage.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Redirect(GetUserPage());
+        }
+
+        public async Task<int> GetNewBlockId()
+        {
+            var _listOfBlocks = await _context.UserBlockPage.ToListAsync();
+
+            if (_listOfBlocks != null)
+            {
+                int i = 0;
+                foreach (var item in _listOfBlocks)
+                {
+                    if (item.Id == i)
+                    {
+                        i = item.Id + 1;
+                    }
+                }
+                return i;
+            }
+            else
+            {
+                return _context.UserBlockPage.Count() + 1;
+            }
         }
 
         private bool UserPageExists(int id)
@@ -245,6 +411,11 @@ namespace PublicSchoolProj.Pages.Admin
         private bool UserPageBlockExists(int id)
         {
             return _context.UserBlockPage.Any(e => e.Id == id);
+        }
+
+        private string TranslateLinkToString(SelectListItem item)
+        {
+            return item.Value;
         }
 
         private string GetUserPage()

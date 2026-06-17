@@ -1,8 +1,10 @@
 ﻿@page
+@using PublicSchoolProj.Models
 @model PublicSchoolProj.Pages.Admin.EditModel
 
 @{
     ViewData["Title"] = "Edit";
+    UserPage _prev = await Model.PreviewUserPage();
 }
 
 <h1>Edit</h1>
@@ -31,10 +33,54 @@
                 <input asp-for="UserPage.views" class="form-control" />
                 <span asp-validation-for="UserPage.views" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div>
                 <label asp-for="UserPage.links" class="control-label"></label>
-                <input asp-for="UserPage.links" class="form-control" />
-                <span asp-validation-for="UserPage.links" class="text-danger"></span>
+                    @if (Model.UserPage.GetLinks().Count > 0)
+                {
+                    int link_amount = Model.UserPage.GetLinks().Count;
+                    @if (link_amount < 3)
+                        {
+                        <button type="submit" asp-page-handler="link" asp-route-id="@Model.UserPage.Id">Add Link</button>
+                        <label>(Max 3)</label>
+                    }
+                    int link_i = 0;
+                    bool can_erase = link_amount > 0;
+
+                    foreach (var item in Model.UserPage.GetLinks())
+                        {
+                            <div class="one-row">
+                            <select asp-for="UserPage.links[link_i]">
+                            @foreach (var sub_item in await Model.GetListOfItems())
+                            {
+                                @if (Model.GetTitleFromLink(item.ToString()) != null)
+                                {
+                                    if (Model.GetTitleFromLink(item.ToString()) == sub_item.Text)
+                                    {
+                                        <option value="@sub_item.Value" selected="selected">@sub_item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@sub_item.Value">@sub_item.Text</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="@sub_item.Value">@sub_item.Text</option>
+                                }
+                            }
+                            </select>
+                            @if (can_erase)
+                            {
+                                <button type="submit" asp-page-handler="LinkDelete" asp-route-id="@Model.UserPage.Id" asp-route-target="@link_i">Delete</button>
+                            }
+                        </div>
+                        link_i++;
+                        }
+                    }
+                else
+                {
+                    <button type="submit" asp-page-handler="link" asp-route-id="@Model.UserPage.Id">Add Link</button>
+                    }
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -94,9 +140,10 @@
             int i = 0;
             @foreach (var block in Model.UserPageBlocks)
             {
+                <div class="border-light">
                 @if (block.ImagePath == null)
                 {
-                    <div class="block-pic">
+                    <div class="block-pic one-row">
                         <form method="post" enctype="multipart/form-data">
                             <input type="file" class="form-control" name="UploadedImage" />
                             <input asp-page-handler="AddPic"
@@ -108,7 +155,7 @@
                 }
                 else if (block.ImagePath.Length < 2)
                 {
-                    <div class="block-pic">
+                    <div class="block-pic one-row">
                         <form method="post" enctype="multipart/form-data">
                             <input type="file" class="form-control" name="UploadedImage" />
                             <input asp-page-handler="AddPic"
@@ -169,7 +216,7 @@
                         </div>
                     }
                 </form>
-
+                </div>
                 i++;
             }
         }
@@ -177,7 +224,7 @@
 </div>
 
 <div>
-    <a asp-page="./IndexB">Back to List</a>
+    <a asp-page="/Admin/Index">Back to List</a>
 </div>
 <br/>
 <h4>Preview</h4>
@@ -185,7 +232,7 @@
 <div class="row">
     @if (Model.UserPage != null)
     {
-        <partial name="CustomPage" for="@Model.UserPage" />
+        <partial name="CustomPage" for="@_prev" />
     }
 </div>
 

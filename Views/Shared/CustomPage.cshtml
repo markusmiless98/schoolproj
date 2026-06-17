@@ -9,6 +9,12 @@
 		<h2>@Model.title</h2>
 		<p>@Model.description</p>
 	</div>
+	@foreach (var item in Model.links)
+	{
+		<div>
+			<a href="/@item">@item</a>
+		</div>
+	}
 	@if (Model.GetBlocks().Count > 0)
 	{
 		@foreach (var _page in Model.GetBlocks())
@@ -32,6 +38,9 @@
 				}
 				<p>
 					@_page.Text
+				</p>
+				<p>
+					Temp; @_page.Id
 				</p>
 			</div>
 		}

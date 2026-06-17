@@ -21,8 +21,12 @@ body {
   margin-bottom: 60px;
 }
 
-.user-post{
-    border:5px solid black;
+.border-light{
+    border:1px solid black;
+}
+
+.user-post {
+    border: 5px solid black;
 }
 .page-block{
     border:2px double red;
@@ -31,7 +35,6 @@ body {
 .one-row{
     max-height:300px;
     max-width:800px;
-    border:red solid 2px;
     display:flex;
     flex-direction:row;
 }

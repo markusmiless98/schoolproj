@@ -6,30 +6,44 @@
 }
 
 <div class="user-post">
-	<h2>@Model.UserPage.title</h2>
-	<p>@Model.UserPage.description</p>
-	@foreach (var _page in Model.UserPage.GetBlocks())
+	<div class="user-page-top">
+		<h2>@Model.UserPage.title</h2>
+		<p>@Model.UserPage.description</p>
+	</div>
+	@foreach (var item in Model.UserPage.links)
 	{
-		<div class="page-block width_@_page.Width">
-			@if (_page.Title != null)
-			{
-				<h3>
-					@_page.Title
-				</h3>
-			}
-			@if (_page.ImagePath != null)
-			{
-				<div class="picture-holder">
-					<img src="~/img/@_page.ImagePath" />
-				</div>
-			}
-			else
-			{
-				<p>NO PIC</p>
-			}
-			<p>
-				@_page.Text
-			</p>
+		<div>
+			<a href="/@item">@item</a>
 		</div>
+	}
+	@if (Model.UserPage.GetBlocks().Count > 0)
+	{
+		@foreach (var _page in Model.UserPage.GetBlocks())
+		{
+			<div class="page-block width_@_page.Width">
+				@if (_page.Title != null)
+				{
+					<h3>
+						@_page.Title
+					</h3>
+				}
+				@if (_page.IsImagePathValid())
+				{
+					<div class="picture-holder">
+						<img src="~/img/@_page.ImagePath" />
+					</div>
+				}
+				else if (_page.ImagePath != null && _page.ImagePath.Length > 1)
+				{
+					<p>Invalid Pic</p>
+				}
+				<p>
+					@_page.Text
+				</p>
+				<p>
+					Temp; @_page.Id
+				</p>
+			</div>
+		}
 	}
 </div>
