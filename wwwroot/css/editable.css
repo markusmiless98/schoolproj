@@ -1,0 +1,23 @@
+:root {
+    --link-color: blue;
+    --title-color: black;
+    --title-size: 20px;
+    --text-color: black;
+    --text-size: 10px;
+}
+
+
+a{
+    color:var(--link-color);
+}
+
+.title {
+    color:var(--title-color);
+    --title-size:var(--title-size);
+}
+
+.text{
+    color:var(--text-color);
+    font-size:var(--text-size);
+}
+

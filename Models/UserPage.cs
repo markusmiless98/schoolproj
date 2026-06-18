@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Azure;
+using PublicSchoolProj.Classes;
 
 namespace PublicSchoolProj.Models
 {
@@ -16,6 +17,9 @@ namespace PublicSchoolProj.Models
 
         [NotMapped]
         public List<IFormFile> _pictures { get; set; } = new List<IFormFile>();
+
+        [NotMapped]
+        public List<Links> _listOfLinks { get; set; }
 
         public virtual List<UserPageBlock> _blocks { get; set; } = new List<UserPageBlock>();
 

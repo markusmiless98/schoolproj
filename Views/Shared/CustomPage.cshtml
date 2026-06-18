@@ -9,11 +9,23 @@
 		<h2>@Model.title</h2>
 		<p>@Model.description</p>
 	</div>
-	@foreach (var item in Model.links)
+	@if (Model._listOfLinks != null)
 	{
-		<div>
-			<a href="/@item">@item</a>
-		</div>
+		@foreach (var item in Model._listOfLinks)
+		{
+			<div>
+				<a href="/@item._link">@item._text</a>
+			</div>
+		}
+	}
+	else
+	{
+		@foreach (var item in Model.links)
+		{
+			<div>
+				<a href="/@item">@item</a>
+			</div>
+		}
 	}
 	@if (Model.GetBlocks().Count > 0)
 	{

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PublicSchoolProj.Classes;
 using PublicSchoolProj.Data;
 using PublicSchoolProj.Models;
 
@@ -131,21 +132,43 @@ namespace PublicSchoolProj.Pages.Admin
 
             if (_prev == null) return null;
 
-            if (_linkOptions != null)
+            UserPage _page = new UserPage();
+            _page = _prev;
+
+            List<Links> _linkedList = await SetUpLinks();
+            if (_linkedList != null)
             {
-                int i = 0;
-                while (i < _prev.links.Count)
-                {
-                    string _temp = _linkOptions.FirstOrDefault(e => e.Value == _prev.links[i]).Text;
-                    if (_temp != null)
-                    {
-                        _prev.links[i] = _temp;
-                    }
-                    i++;
-                }
+                _page._listOfLinks = _linkedList;
             }
 
             return _prev;
+        }
+
+        private async Task<List<Links>> SetUpLinks()
+        {
+            if (UserPage == null) return null;
+            if (UserPage.links == null) return null;
+
+            if (UserPage.links.Count > 0)
+            {
+                List<Links> _links = new List<Links>();
+                foreach (var item in UserPage.GetLinks())
+                {
+                    var _linkedPage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == item);
+                    if (_linkedPage != null)
+                    {
+                        _links.Add(new Links(_linkedPage.title, GetLink(item.ToString())));
+                    }
+                }
+                return _links;
+            }
+
+            return null;
+        }
+        private string GetLink(string _id)
+        {
+            if (_id == null) return "";
+            return "Admin/Edit?id=" + _id;
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
