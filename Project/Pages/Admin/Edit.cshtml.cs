@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PublicCssAPI.DataType;
+using PublicCssAPI.JSON;
 using PublicSchoolProj.Classes;
 using PublicSchoolProj.Data;
 using PublicSchoolProj.Models;
@@ -32,6 +34,8 @@ namespace PublicSchoolProj.Pages.Admin
         int _id { get; set; } = default!;
 
         public List<SelectListItem> _linkOptions { get; set; }
+
+        public List<string> _css { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -251,10 +255,17 @@ namespace PublicSchoolProj.Pages.Admin
                 await _context.SaveChangesAsync();
             }
 
-
             return Redirect(GetUserPage());
         }
 
+        public async Task<List<string>> GetStringFromJson()
+        {
+            CssData _data = new CssData(true);
+
+            JsonHandler _handle = new JsonHandler();
+
+            return await _handle.GetFile(_data);
+        }
 
         public async Task OnPostAddPicAsync(int id, int target)
         {

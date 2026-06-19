@@ -73,5 +73,25 @@ namespace PublicSchoolProj.Pages.Admin
 
             return RedirectToPage("./Index");
         }
+        public async Task<IActionResult> OnPostDeleteAllAsync(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var userpages = await _context.UserPage.ToListAsync();
+            var userblock_pages = await _context.UserBlockPage.ToListAsync();
+            if (userpages != null)
+            {
+                _context.UserBlockPage.RemoveRange(userblock_pages);
+
+                _context.UserPage.RemoveRange(userpages);
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage("./Index");
+        }
     }
 }

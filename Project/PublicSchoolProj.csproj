@@ -20,8 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Handler\" />
     <Folder Include="wwwroot\img\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PublicCssAPI\PublicCssAPI.csproj" />
   </ItemGroup>
 
 </Project>
