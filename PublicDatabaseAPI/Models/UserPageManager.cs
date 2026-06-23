@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
 
-namespace PublicSchoolProj.Models
+namespace PublicDatabaseAPI.Models
 {
     public class UserPageManager
     {
@@ -61,12 +61,6 @@ namespace PublicSchoolProj.Models
             _SelectedPageBlock = _UserPage.GetBlocks()[id];
         }
 
-        public void SetPictureOfBlock(IFormFile _file)
-        {
-            if (!CanProceed(_file)) return;
-
-            _SelectedPageBlock._picture = _file;
-        }
         public void SetTitleOfBlock(string _title)
         {
             if (!CanProceed(_title)) return;

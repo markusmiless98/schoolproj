@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicSchoolProj", "PublicS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicCssAPI", "..\PublicCssAPI\PublicCssAPI.csproj", "{443BEBBE-9364-47EB-AD8D-D9AFB23A418A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicDatabaseAPI", "..\PublicDatabaseAPI\PublicDatabaseAPI.csproj", "{0AF2E506-75C8-417B-8A53-FD41EBD5C25A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{443BEBBE-9364-47EB-AD8D-D9AFB23A418A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{443BEBBE-9364-47EB-AD8D-D9AFB23A418A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{443BEBBE-9364-47EB-AD8D-D9AFB23A418A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AF2E506-75C8-417B-8A53-FD41EBD5C25A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AF2E506-75C8-417B-8A53-FD41EBD5C25A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AF2E506-75C8-417B-8A53-FD41EBD5C25A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AF2E506-75C8-417B-8A53-FD41EBD5C25A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

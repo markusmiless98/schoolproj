@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PublicSchoolProj.Data.Migrations
+namespace PublicDatabaseAPI.Data.Migrations
 {
     /// <inheritdoc />
     public partial class UserPage : Migration

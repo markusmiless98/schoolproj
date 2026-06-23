@@ -1,7 +1,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PublicSchoolProj.Models;
+using PublicDatabaseAPI.Data;
+using PublicDatabaseAPI.Models;
 
 namespace PublicSchoolProj.Pages
 {
@@ -54,7 +55,6 @@ namespace PublicSchoolProj.Pages
                 using (var fileStream = new FileStream(file, FileMode.OpenOrCreate))
                 {
                     await UploadedImage.CopyToAsync(fileStream);
-                    PageManager.GetBlock()._picture = UploadedImage;
                     _txt = file.ToString();
                 }
             }

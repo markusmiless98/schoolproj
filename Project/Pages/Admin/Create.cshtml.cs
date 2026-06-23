@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PublicSchoolProj.Data;
-using PublicSchoolProj.Models;
+using PublicDatabaseAPI.Data;
+using PublicDatabaseAPI.Models;
 
 namespace PublicSchoolProj.Pages.Admin
 {
     public class CreateModel : PageModel
     {
-        private readonly PublicSchoolProj.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public CreateModel(PublicSchoolProj.Data.ApplicationDbContext context)
+        public CreateModel(ApplicationDbContext context)
         {
             _context = context;
         }

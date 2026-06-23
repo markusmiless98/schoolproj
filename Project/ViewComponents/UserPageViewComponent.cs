@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PublicSchoolProj.Models;
+using PublicDatabaseAPI.Models;
 
 namespace PublicSchoolProj.ViewComponents
 {

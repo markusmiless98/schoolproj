@@ -9,19 +9,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PublicCssAPI.DataType;
 using PublicCssAPI.JSON;
-using PublicSchoolProj.Classes;
-using PublicSchoolProj.Data;
-using PublicSchoolProj.Models;
+using PublicDatabaseAPI.Controllers;
+using PublicDatabaseAPI.Data;
+using PublicDatabaseAPI.Models;
 
 namespace PublicSchoolProj.Pages.Admin
 {
     public class EditModel : PageModel
     {
-        private readonly PublicSchoolProj.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly UserPageController _control;
 
-        public EditModel(PublicSchoolProj.Data.ApplicationDbContext context)
+
+        [BindProperty]
+        public int _callsMade { get; set; } = 0;
+        [BindProperty]
+        public int _callsSaved { get; set; } = 0;
+
+        public EditModel(ApplicationDbContext context)
         {
             _context = context;
+            _control = new UserPageController(context);
         }
 
         [BindProperty]
@@ -57,6 +65,9 @@ namespace PublicSchoolProj.Pages.Admin
                 _id = (int)id;
             }
 
+            _callsMade = _control.GetMadeCalls();
+            _callsSaved = _control.GetSavedCalls();
+
             return Page();
         }
 
@@ -91,7 +102,8 @@ namespace PublicSchoolProj.Pages.Admin
 
         private async Task GetUserPageById(int id, bool get_blocks = true)
         {
-            var userpage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
+            var userpage = await _control.Read(id);
+
             if (userpage == null)
             {
                 throw new Exception("Failed to load the user page with ID " + id);
@@ -181,23 +193,7 @@ namespace PublicSchoolProj.Pages.Admin
         {
             await GetUserBlockPageById(UserPage.Id);
 
-            _context.Attach(UserPage).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserPageExists(UserPage.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _control.Update(UserPage);
 
             return Redirect(GetUserPage());
         }
@@ -293,7 +289,6 @@ namespace PublicSchoolProj.Pages.Admin
                 using (var fileStream = new FileStream(file, FileMode.OpenOrCreate))
                 {
                     await UploadedImage.CopyToAsync(fileStream);
-                    UserPageBlock._picture = UploadedImage;
                 }
                 UserPageBlock.ImagePath = file;
                 
@@ -358,23 +353,7 @@ namespace PublicSchoolProj.Pages.Admin
 
             UserPage.AddLinks();
 
-            _context.Attach(UserPage.links).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserPageExists(UserPage.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _control.Update(UserPage);
 
             return Redirect(GetUserPage());
         }
@@ -394,24 +373,8 @@ namespace PublicSchoolProj.Pages.Admin
             {
                 throw new ArgumentException("Delete failed to occur, contact administrator");
             }
-            
-            _context.Attach(UserPage).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserPageExists(UserPage.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _control.Update(UserPage);
 
             return Redirect(GetUserPage());
         }

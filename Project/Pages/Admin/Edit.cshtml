@@ -1,5 +1,5 @@
 ﻿@page
-@using PublicSchoolProj.Models
+@using PublicDatabaseAPI.Models
 @model PublicSchoolProj.Pages.Admin.EditModel
 
 @{
@@ -195,7 +195,6 @@
                     <input type="hidden" value="@Model.UserPage.Id" asp-for="UserPageBlock.UserPageId" />
                     <input type="hidden" value="1" asp-for="UserPageBlock.Row" />
                     <input type="hidden" value="1" asp-for="UserPageBlock.Column" />
-                    <input type="hidden" value="@block._picture" asp-for="UserPageBlock._picture" />
                     <input type="hidden" value="@block.ImagePath" asp-for="UserPageBlock.ImagePath" />
 
 
@@ -239,6 +238,7 @@
 <div class="row">
     @if (Model.UserPage != null)
     {
+        <a asp-controller="UserPage" asp-action="UPage" asp-route-user="@Model.UserPage">Go To Preview</a>
         <partial name="CustomPage" for="@_prev" />
     }
 </div>

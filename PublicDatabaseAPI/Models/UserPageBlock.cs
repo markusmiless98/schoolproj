@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PublicSchoolProj.Models
+namespace PublicDatabaseAPI.Models
 {
     public class UserPageBlock
     {
@@ -15,16 +15,12 @@ namespace PublicSchoolProj.Models
         public string? Title { get; set; } = "";
         public string? Text { get; set; } = "";
 
-
-        [NotMapped]
-        public IFormFile? _picture { get; set; } // Might get removed later lol
-
         public bool IsValidBlock()
         {
             if (Column < 0 || Row < 0) return false;
             if (Width < 1) return false;
 
-            if (Text == null && _picture == null)
+            if (Text == null && ImagePath == null)
             {
                 return false;
             }
@@ -68,11 +64,6 @@ namespace PublicSchoolProj.Models
                 {
                     ImagePath = _over.ImagePath;
                 }
-            }
-            if (_over._picture != null)
-            {
-                _picture = _over._picture;
-                ImagePath = _picture.FileName;
             }
             if (_over.Row != Row)
             {

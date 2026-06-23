@@ -4,7 +4,7 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
-    Model.PageManager = new Models.UserPageManager();
+    Model.PageManager = new PublicDatabaseAPI.Models.UserPageManager();
 }
 <div class="text-center">
     @if (SignInManager.IsSignedIn(User))

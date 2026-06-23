@@ -1,4 +1,4 @@
-﻿namespace PublicSchoolProj.Classes
+﻿namespace PublicDatabaseAPI.Models
 {
     public class Links
     {

@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using PublicSchoolProj.Data;
-using PublicSchoolProj.Models;
+using PublicDatabaseAPI.Data;
+using PublicDatabaseAPI.Models;
 
 namespace PublicSchoolProj.Pages.Admin
 {
     public class IndexModel : PageModel
     {
-        private readonly PublicSchoolProj.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public IndexModel(PublicSchoolProj.Data.ApplicationDbContext context)
+        public IndexModel(ApplicationDbContext context)
         {
             _context = context;
         }

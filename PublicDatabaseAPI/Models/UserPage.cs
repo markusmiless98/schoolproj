@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Azure;
-using PublicSchoolProj.Classes;
 
-namespace PublicSchoolProj.Models
+namespace PublicDatabaseAPI.Models
 {
     public class UserPage
     {
@@ -16,9 +14,6 @@ namespace PublicSchoolProj.Models
         public List<string> links { get; set; } = new List<string>();
 
         [NotMapped]
-        public List<IFormFile> _pictures { get; set; } = new List<IFormFile>();
-
-        [NotMapped]
         public List<Links> _listOfLinks { get; set; }
 
         public virtual List<UserPageBlock> _blocks { get; set; } = new List<UserPageBlock>();
@@ -26,16 +21,12 @@ namespace PublicSchoolProj.Models
         public bool IsValidPage()
         {
             if (userId == null) return false;
-            if (description == null && _pictures == null && _blocks == null) return false;
+            if (description == null && _blocks == null) return false;
 
             int _length = 0;
             if (description != null)
             {
                 _length += description.Length;
-            }
-            if (_pictures != null)
-            {
-                _length += _pictures.Count;
             }
             if (_blocks != null)
             {
@@ -141,6 +132,30 @@ namespace PublicSchoolProj.Models
             }
 
             return _blocks[id];
+        }
+
+        public virtual void OverWrite(UserPage _page)
+        {
+            if (_page.userId != null)
+            {
+                this.userId = _page.userId;
+            }
+            if (_page.title != null)
+            {
+                this.title = _page.title;
+            }
+            if (_page.description != null)
+            {
+                this.description = _page.description;
+            }
+            if (_page.GetBlocks() != null)
+            {
+                this._blocks = _page._blocks;
+            }
+            if (_page._listOfLinks != null)
+            {
+                this._listOfLinks = _page._listOfLinks;
+            }
         }
 
         private List<UserPageBlock> BlockSort(List<UserPageBlock> _list)

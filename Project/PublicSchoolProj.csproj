@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PublicCssAPI\PublicCssAPI.csproj" />
+    <ProjectReference Include="..\PublicDatabaseAPI\PublicDatabaseAPI.csproj" />
   </ItemGroup>
 
 </Project>

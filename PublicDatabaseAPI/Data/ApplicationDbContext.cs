@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PublicSchoolProj.Models;
+using PublicDatabaseAPI.Models;
 
-namespace PublicSchoolProj.Data
+namespace PublicDatabaseAPI.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
@@ -10,8 +10,8 @@ namespace PublicSchoolProj.Data
             : base(options)
         {
         }
-        public DbSet<PublicSchoolProj.Models.UserPage> UserPage { get; set; } = default!;
+        public DbSet<PublicDatabaseAPI.Models.UserPage> UserPage { get; set; } = default!;
 
-        public DbSet<PublicSchoolProj.Models.UserPageBlock> UserBlockPage { get; set; } = default!;
+        public DbSet<PublicDatabaseAPI.Models.UserPageBlock> UserBlockPage { get; set; } = default!;
     }
 }
