@@ -8,8 +8,18 @@
 	<div class="user-page-top">
 		<h2>@Model.title</h2>
 		<p>@Model.description</p>
+		<p>Views; @Model.views</p>
 	</div>
-	@if (Model._listOfLinks != null)
+	@if (Model._listOfLinks == null)
+	{
+		@foreach (var item in Model.links)
+		{
+			<div>
+				<a href="/@item">@item</a>
+			</div>
+		}
+	}
+	else if (Model._listOfLinks.Count > 0)
 	{
 		@foreach (var item in Model._listOfLinks)
 		{

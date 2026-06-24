@@ -22,8 +22,6 @@ namespace PublicSchoolProj.Pages.Admin
 
         public UserPage UserPage { get; set; } = default!;
 
-
-
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -37,6 +35,10 @@ namespace PublicSchoolProj.Pages.Admin
                 return NotFound();
             }
             UserPage = userpage;
+
+            UserPage.views++;
+
+            await _context.GetUserPageController().Update(UserPage);
 
             await SetUpLinks();
 

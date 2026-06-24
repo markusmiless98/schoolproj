@@ -7,7 +7,6 @@ namespace PublicSchoolProj.ViewComponents
     {
         private UserPage _userPage;
 
-
         public UserPageViewComponent(UserPage userService)
         {
             _userPage = userService;

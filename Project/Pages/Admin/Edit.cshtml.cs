@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Humanizer;
 using Humanizer.Localisation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,30 +20,29 @@ namespace PublicSchoolProj.Pages.Admin
     public class EditModel : PageModel
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserPageController _control;
-
-
-        [BindProperty]
-        public int _callsMade { get; set; } = 0;
-        [BindProperty]
-        public int _callsSaved { get; set; } = 0;
+        private readonly UserPageController _controlPage;
+        private readonly UserPageBlockController _controlBlock;
 
         public EditModel(ApplicationDbContext context)
         {
             _context = context;
-            _control = new UserPageController(context);
+            _controlPage = context.GetUserPageController();
+            _controlBlock = context.GetUserPageBlockController();
         }
 
         [BindProperty]
         public UserPage UserPage { get; set; } = default!;
         [BindProperty]
         public IList<UserPageBlock> UserPageBlocks { get; set; } = default!;
+
         [BindProperty]
         public IFormFile UploadedImage { get; set; }
 
         int _id { get; set; } = default!;
 
         public List<SelectListItem> _linkOptions { get; set; }
+
+        public List<SelectListItem> Images { get; set; }
 
         public List<string> _css { get; set; }
 
@@ -60,13 +61,12 @@ namespace PublicSchoolProj.Pages.Admin
             
             _linkOptions = await GetListOfItems();
 
+            //Images = await GetListOfImages();
+
             if (id != null)
             {
                 _id = (int)id;
             }
-
-            _callsMade = _control.GetMadeCalls();
-            _callsSaved = _control.GetSavedCalls();
 
             return Page();
         }
@@ -81,6 +81,41 @@ namespace PublicSchoolProj.Pages.Admin
                 Value = a.Id.ToString(),
                 Text = a.title
             }).ToListAsync();
+        }
+
+        private async Task<List<SelectListItem>> GetListOfImages()
+        {
+            if (Images != null) return Images;
+
+            string _temp = "/wwwroot/img/";
+            // TBA; User must accept access to root folder or else this bad
+            string _filePath = Environment.CurrentDirectory + _temp;
+
+            string[] allfiles = Directory.GetFiles(_filePath, "*.png", SearchOption.AllDirectories);
+
+            if (allfiles.Count() < 1)
+            {
+                return null;
+            }
+
+            List<SelectListItem> _items = new List<SelectListItem>();
+
+            int i = allfiles.Count() - 1;
+            while (i > 0)
+            {
+                var item = allfiles[i];
+                Debug.WriteLine(item.ToString());
+                item = item.Split("/img/")[1];
+                Debug.WriteLine(item.ToString());
+                i--;
+                _items.Add(
+                new SelectListItem
+                {
+                    Text = item,
+                    Value = item
+                });
+            }
+            return _items;
         }
 
         public string GetTitleFromLink(string _str)
@@ -102,7 +137,7 @@ namespace PublicSchoolProj.Pages.Admin
 
         private async Task GetUserPageById(int id, bool get_blocks = true)
         {
-            var userpage = await _control.Read(id);
+            var userpage = await _controlPage.Read(id);
 
             if (userpage == null)
             {
@@ -118,7 +153,7 @@ namespace PublicSchoolProj.Pages.Admin
 
         private async Task GetUserBlockPageById(int id)
         {
-            UserPageBlocks = await _context.UserBlockPage.Where(e => e.UserPageId == id).ToListAsync();
+            UserPageBlocks = await _controlBlock.ReadAll();
             if (UserPageBlocks == null)
             {
                 throw new Exception("Failed to load the user blocks from page with ID " + id);
@@ -193,7 +228,7 @@ namespace PublicSchoolProj.Pages.Admin
         {
             await GetUserBlockPageById(UserPage.Id);
 
-            await _control.Update(UserPage);
+            await _controlPage.Update(UserPage);
 
             return Redirect(GetUserPage());
         }
@@ -208,15 +243,7 @@ namespace PublicSchoolProj.Pages.Admin
             UserPageBlock _block = new UserPageBlock();
             _block.UserPageId = UserPage.userId;
 
-            UserPage.Id = id;
-
-
-            UserPage._blocks.Add(_block);
-            _context.UserBlockPage.Add(_block);
-
-            _context.Attach(UserPage).State = EntityState.Modified;
-
-            await _context.SaveChangesAsync();
+            await _controlBlock.Create(UserPageBlock);
 
             return Redirect(GetUserPage());
         }
@@ -226,7 +253,7 @@ namespace PublicSchoolProj.Pages.Admin
 
             UserPage.GetBlocks().Clear();
             List<UserPageBlock> _blocks = new List<UserPageBlock>();
-            _blocks = await _context.UserBlockPage.Where(m => m.UserPageId == id).ToListAsync();
+            _blocks = await _controlBlock.ReadAll();
 
             if (_blocks.Count < 1)
             {
@@ -236,19 +263,12 @@ namespace PublicSchoolProj.Pages.Admin
             UserPageBlock _block = UserPage.GetBlocks()[target];
             _block.UserPageId = UserPage.userId;
 
-            UserPage.Id = id;
-            UserPage._blocks.Remove(_block);
-
-            _context.Attach(UserPage).State = EntityState.Modified;
-
-            var userpageblock = await _context.UserBlockPage.FindAsync(_block.Id);
+            var userpageblock = await _controlBlock.Read(_block.Id);
             if (userpageblock != null)
             {
                 UserPageBlock = userpageblock;
 
-                _context.UserBlockPage.Remove(userpageblock);
-
-                await _context.SaveChangesAsync();
+                await _controlBlock.Delete(userpageblock.Id);
             }
 
             return Redirect(GetUserPage());
@@ -263,7 +283,7 @@ namespace PublicSchoolProj.Pages.Admin
             return await _handle.GetFile(_data);
         }
 
-        public async Task OnPostAddPicAsync(int id, int target)
+        public async Task<IActionResult> OnPostAddPicAsync(int id, int target)
         {
             if (UploadedImage == null)
             {
@@ -276,9 +296,9 @@ namespace PublicSchoolProj.Pages.Admin
 
             if (userblock == null)
             {
-                NotFound();
+                return NotFound();
             }
-            var userpageblock = await _context.UserBlockPage.Where(m => m.Id == userblock.Id).FirstOrDefaultAsync();
+            var userpageblock = await _controlBlock.Read(userblock.Id);
 
             if (userpageblock != null)
             {
@@ -289,34 +309,47 @@ namespace PublicSchoolProj.Pages.Admin
                 using (var fileStream = new FileStream(file, FileMode.OpenOrCreate))
                 {
                     await UploadedImage.CopyToAsync(fileStream);
+                    UserPageBlock.ImagePath = UploadedImage.FileName;
                 }
-                UserPageBlock.ImagePath = file;
                 
-                userpageblock.Overwrite(UserPageBlock);
-                _context.Attach(userpageblock).State = EntityState.Modified;
+                userpageblock.OverWrite(UserPageBlock);
 
-
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserPageBlockExists(userpageblock.Id))
-                    {
-                        NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _controlBlock.Update(userpageblock);
             }
             else
             {
-                NotFound();
-                throw new Exception("W");
+                return NotFound();
             }
+
+            return Redirect(GetUserPage());
+        }
+        public async Task<IActionResult> OnPostRemovePicAsync(int id, int target)
+        {
+            await GetUserPageById(id);
+
+            var userblock = UserPage.GetBlock(target);
+
+            if (userblock == null)
+            {
+                return NotFound();
+            }
+            var userpageblock = await _controlBlock.Read(userblock.Id);
+
+            if (userpageblock != null)
+            {
+                UserPageBlock = userpageblock;
+                UserPageBlock.ImagePath = null;
+
+                userpageblock.OverWrite(UserPageBlock);
+
+                await _controlBlock.Update(userpageblock);
+            }
+            else
+            {
+                return NotFound();
+            }
+
+            return Redirect(GetUserPage());
         }
 
         public async Task<IActionResult> OnPostEditBlockAsync(int id, int target)
@@ -325,25 +358,9 @@ namespace PublicSchoolProj.Pages.Admin
 
             var userpageblock = await _context.UserBlockPage.FindAsync(target);
 
-            userpageblock.Overwrite(UserPageBlock);
+            userpageblock.OverWrite(UserPageBlock);
 
-            _context.Attach(userpageblock).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserPageBlockExists(UserPageBlock.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _controlBlock.Update(userpageblock);
 
             return Redirect(GetUserPage());
         }
@@ -353,7 +370,7 @@ namespace PublicSchoolProj.Pages.Admin
 
             UserPage.AddLinks();
 
-            await _control.Update(UserPage);
+            await _controlPage.Update(UserPage);
 
             return Redirect(GetUserPage());
         }
@@ -374,14 +391,14 @@ namespace PublicSchoolProj.Pages.Admin
                 throw new ArgumentException("Delete failed to occur, contact administrator");
             }
 
-            await _control.Update(UserPage);
+            await _controlPage.Update(UserPage);
 
             return Redirect(GetUserPage());
         }
 
         public async Task<int> GetNewBlockId()
         {
-            var _listOfBlocks = await _context.UserBlockPage.ToListAsync();
+            var _listOfBlocks = await _controlBlock.ReadAll();
 
             if (_listOfBlocks != null)
             {
@@ -397,22 +414,9 @@ namespace PublicSchoolProj.Pages.Admin
             }
             else
             {
-                return _context.UserBlockPage.Count() + 1;
+                var b = await _controlBlock.ReadAll();
+                return (int)b.Count;
             }
-        }
-
-        private bool UserPageExists(int id)
-        {
-            return _context.UserPage.Any(e => e.Id == id);
-        }
-        private bool UserPageBlockExists(int id)
-        {
-            return _context.UserBlockPage.Any(e => e.Id == id);
-        }
-
-        private string TranslateLinkToString(SelectListItem item)
-        {
-            return item.Value;
         }
 
         private string GetUserPage()

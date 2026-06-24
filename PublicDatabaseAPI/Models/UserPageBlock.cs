@@ -40,7 +40,7 @@ namespace PublicDatabaseAPI.Models
             if (Text == null) Text = "";
         }
 
-        public virtual void Overwrite(UserPageBlock _over)
+        public virtual void OverWrite(UserPageBlock _over)
         {
             if (_over == null) return;
 

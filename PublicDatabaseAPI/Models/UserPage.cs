@@ -152,6 +152,10 @@ namespace PublicDatabaseAPI.Models
             {
                 this._blocks = _page._blocks;
             }
+            if (_page.links != null)
+            {
+                this.links = _page.links;
+            }
             if (_page._listOfLinks != null)
             {
                 this._listOfLinks = _page._listOfLinks;

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 //using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using PublicDatabaseAPI.Data;
@@ -7,21 +9,21 @@ using PublicDatabaseAPI.Models;
 
 namespace PublicDatabaseAPI.Controllers
 {
-    public interface IUserPageController
+    public interface IUserPageBlockController
     {
-        async Task<List<UserPage>> ReadAll()
+        async Task<List<UserPageBlock>> ReadAll()
         {
             throw new NotImplementedException();
         }
-        async Task Create(UserPage userpage)
+        async Task Create(UserPageBlock userblock)
         {
             throw new NotImplementedException();
         }
-        async Task<UserPage> Read(int id)
+        async Task<UserPageBlock> Read(int id)
         {
             throw new NotImplementedException();
         }
-        async Task<UserPage> Update(UserPage modifier_page)
+        async Task<UserPageBlock> Update(UserPageBlock modifier_block)
         {
             throw new NotImplementedException();
         }
@@ -30,45 +32,45 @@ namespace PublicDatabaseAPI.Controllers
             throw new NotImplementedException();
         }
     }
-    public class UserPageController : IUserPageController
+    public class UserPageBlockController : IUserPageBlockController
     {
         private readonly ApplicationDbContext _context;
-        private List<UserPage> _userpages = new List<UserPage>();
+        private List<UserPageBlock> _userblocks = new List<UserPageBlock>();
         private bool _active = false;
 
-        public UserPageController(ApplicationDbContext context)
+        public UserPageBlockController(ApplicationDbContext context)
         {
             if (context == null)
             {
                 throw new Exception("No DB Context given");
             }
             _context = context;
-            //Debug.WriteLine("--Created: User Page Controller");
+            //Debug.WriteLine("--Created: User Page Block Controller");
         }
 
         public async Task SetUpCache()
         {
             if (_context == null) throw new Exception("No DB Context to help set up Cache for User Page Handler");
 
-            _userpages = await _context.UserPage.ToListAsync();
-            
+            _userblocks = await _context.UserBlockPage.ToListAsync();
+
             _active = true;
         }
 
-        public async Task Create(UserPage userpage)
+        public async Task Create(UserPageBlock userblock)
         {
             if (IsNotActive()) await SetUpCache();
-            
-            _context.Attach(userpage).State = EntityState.Added;
+
+            _context.Attach(userblock).State = EntityState.Added;
 
             try
             {
                 await _context.SaveChangesAsync();
-                _userpages.Add(userpage);
+                _userblocks.Add(userblock);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (UserPageExists(userpage.Id))
+                if (UserPageBlockExists(userblock.Id))
                 {
                     throw new Exception("Failed due to Page with ID already exists");
                 }
@@ -79,11 +81,11 @@ namespace PublicDatabaseAPI.Controllers
             }
         }
 
-        public async Task<UserPage> Read(int id)
+        public async Task<UserPageBlock> Read(int id)
         {
             if (IsNotActive()) await SetUpCache();
 
-            UserPage? _page = _userpages.FirstOrDefault(m => m.Id == id);
+            UserPageBlock? _page = _userblocks.FirstOrDefault(m => m.Id == id);
 
             if (_page != null)
             {
@@ -91,7 +93,7 @@ namespace PublicDatabaseAPI.Controllers
             }
             else
             {
-                _page = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
+                _page = await _context.UserBlockPage.FirstOrDefaultAsync(m => m.Id == id);
                 if (_page != null)
                 {
                     return _page;
@@ -105,100 +107,72 @@ namespace PublicDatabaseAPI.Controllers
         {
             if (IsNotActive()) await SetUpCache();
 
-            UserPage _page = await Read(id);
+            UserPageBlock _block = await Read(id);
 
-            if (_page != null)
+            if (_block != null)
             {
 
-                _context.Attach(_page).State = EntityState.Deleted;
+                _context.Attach(_block).State = EntityState.Deleted;
 
                 try
                 {
                     await _context.SaveChangesAsync();
-                    _userpages.Remove(_page);
+                    _userblocks.Remove(_block);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserPageExists(_page.Id))
+                    if (!UserPageBlockExists(_block.Id))
                     {
                         throw new Exception("Failed to find page with matching Id");
                     }
                     else
                     {
-                        throw;
+                        Debug.WriteLine("Failed to update block through this controller, attempting to do so through next method");
+                        _context.Dispose();
+                        await _context.GetUserPageController().Update(_block); // Backup
                     }
                 }
             }
         }
 
-        public async Task<List<UserPage>> ReadAll()
+        public async Task<List<UserPageBlock>> ReadAll()
         {
             if (IsNotActive()) await SetUpCache();
 
-            if (_userpages != null)
+            if (_userblocks != null)
             {
-                return _userpages;
+                return _userblocks;
             }
             else
             {
-                _userpages = await _context.UserPage.ToListAsync();
-                return _userpages;
+                _userblocks = await _context.UserBlockPage.ToListAsync();
+                return _userblocks;
             }
 
             throw new Exception("Pages to be viewed not Found");
         }
 
-        public async Task Update(UserPage modifier_page)
+        public async Task Update(UserPageBlock modifier_page)
         {
             if (IsNotActive()) await SetUpCache();
 
             int _id = modifier_page.Id;
 
-            UserPage _page = await Read(_id);
-            if (_page != null)
+            UserPageBlock _block = await Read(_id);
+            if (_block != null)
             {
-                _page.OverWrite(modifier_page);
+                _block.OverWrite(modifier_page);
 
-                _context.Attach(_page).State = EntityState.Modified;
+                _context.Attach(_block).State = EntityState.Modified;
 
                 try
                 {
                     await _context.SaveChangesAsync();
-                    _userpages.FirstOrDefault(m => m.Id == _id).OverWrite(modifier_page);
+                    _userblocks.FirstOrDefault(m => m.Id == _id).OverWrite(modifier_page);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserPageExists(_page.Id))
-                    {
-                        throw new Exception("Failed to find page with matching Id");
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-            }
-        }
-        public async Task Update(UserPageBlock _block)
-        {
-            if (IsNotActive()) await SetUpCache();
-            if (_block.UserPageId == null) return;
-
-            int i = (int)_block.UserPageId;
-
-            UserPage _page = await Read(i);
-            if (_page != null)
-            {
-                _context.Attach(_page).State = EntityState.Modified;
-
-                try
-                {
-                    await _context.SaveChangesAsync();
-                    _userpages.FirstOrDefault(m => m.Id == i).GetBlocks().FirstOrDefault(n => n.Id == _block.Id).OverWrite(_block);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserPageExists(_page.Id))
+                    if (!UserPageBlockExists(_block.Id))
                     {
                         throw new Exception("Failed to find page with matching Id");
                     }
@@ -214,9 +188,9 @@ namespace PublicDatabaseAPI.Controllers
         {
             return !_active && _context != null;
         }
-        private bool UserPageExists(int id)
+        private bool UserPageBlockExists(int id)
         {
-            return _context.UserPage.Any(e => e.Id == id);
+            return _context.UserBlockPage.Any(e => e.Id == id);
         }
     }
 }
