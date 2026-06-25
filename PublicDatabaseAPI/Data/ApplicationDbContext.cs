@@ -23,6 +23,9 @@ namespace PublicDatabaseAPI.Data
 
         public DbSet<PublicDatabaseAPI.Models.UserPageBlock> UserBlockPage { get; set; } = default!;
 
+        public DbSet<PublicDatabaseAPI.Models.LayoutCSS> LayoutCSS { get; set; } = default!;
+
+
         public UserPageController GetUserPageController()
         {
             return _UserPageController;

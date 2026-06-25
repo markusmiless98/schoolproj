@@ -8,21 +8,19 @@
 @{
     ViewData["Title"] = "Edit";
     UserPage _prev = await Model.PreviewUserPage();
-    List<string> _test = await Model.GetStringFromJson();
 }
 
 
 <h1>Edit</h1>
 
 <h4>UserPage</h4>
+<h3>
+    <a asp-page="./CSSEdit" asp-route-id="1">Go To Edit CSS</a>
+</h3>
 <hr />
 <p>Page Information;</p>
 <div>
     @Model.UserPage.Id
-    @foreach (var item in _test)
-    {
-        @item
-    }
 </div>
 <div class="row">
     <div class="col-md-6">

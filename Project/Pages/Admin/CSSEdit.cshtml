@@ -1,0 +1,74 @@
+﻿@page
+@model PublicSchoolProj.Pages.Admin.CSSEditModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>CSSEdit</title>
+</head>
+<body>
+
+<h4>LayoutCSS</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="LayoutCSS.Id" />
+            <div class="form-group">
+                <label asp-for="LayoutCSS.LinkColor" class="control-label"></label>
+                <input asp-for="LayoutCSS.LinkColor" class="form-control" />
+                <span asp-validation-for="LayoutCSS.LinkColor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LayoutCSS.TitleSize" class="control-label"></label>
+                <input asp-for="LayoutCSS.TitleSize" class="form-control" />
+                <span asp-validation-for="LayoutCSS.TitleSize" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LayoutCSS.TitleColor" class="control-label"></label>
+                <input asp-for="LayoutCSS.TitleColor" class="form-control" />
+                <span asp-validation-for="LayoutCSS.TitleColor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LayoutCSS.TextSize" class="control-label"></label>
+                <input asp-for="LayoutCSS.TextSize" class="form-control" />
+                <span asp-validation-for="LayoutCSS.TextSize" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LayoutCSS.TextColor" class="control-label"></label>
+                <input asp-for="LayoutCSS.TextColor" class="form-control" />
+                <span asp-validation-for="LayoutCSS.TextColor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LayoutCSS.PicWidth" class="control-label"></label>
+                <input asp-for="LayoutCSS.PicWidth" class="form-control" />
+                <span asp-validation-for="LayoutCSS.PicWidth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LayoutCSS.PicHeight" class="control-label"></label>
+                <input asp-for="LayoutCSS.PicHeight" class="form-control" />
+                <span asp-validation-for="LayoutCSS.PicHeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+</body>
+</html>

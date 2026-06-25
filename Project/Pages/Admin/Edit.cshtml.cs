@@ -9,8 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Mono.TextTemplating;
 using PublicCssAPI.DataType;
-using PublicCssAPI.JSON;
+using PublicCssAPI.Handler;
 using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
@@ -293,15 +294,6 @@ namespace PublicSchoolProj.Pages.Admin
             }
 
             return Redirect(GetUserPage());
-        }
-
-        public async Task<List<string>> GetStringFromJson()
-        {
-            CssData _data = new CssData(true);
-
-            JsonHandler _handle = new JsonHandler();
-
-            return await _handle.GetFile(_data);
         }
 
         public async Task<IActionResult> OnPostAddPicAsync(int id, int target)

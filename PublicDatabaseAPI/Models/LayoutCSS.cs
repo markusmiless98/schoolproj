@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PublicCssAPI.DataType
+namespace PublicDatabaseAPI.Models
 {
-    public class CssData
+    public class LayoutCSS
     {
+        public int Id { get; set; }
         public string LinkColor { get; set; }
 
         public double TitleSize { get; set; }
@@ -19,20 +20,16 @@ namespace PublicCssAPI.DataType
         public int PicWidth { get; set; }
         public int PicHeight { get; set; }
 
-        public CssData(bool _default = true)
+        public virtual void SetDefault()
         {
-            if (_default)
-            {
-                LinkColor = "blue";
-                TitleSize = 20;
-                TitleColor = "Black";
-                TextSize = 10;
-                TextColor = "Black";
-                PicWidth = 600;
-                PicHeight = 600;
-            }
+            LinkColor = "blue";
+            TitleSize = 20;
+            TitleColor = "Black";
+            TextSize = 10;
+            TextColor = "Black";
+            PicWidth = 600;
+            PicHeight = 600;
         }
-
         public List<string> ConvertIntoString()
         {
             List<string> _strings = new List<string>();
