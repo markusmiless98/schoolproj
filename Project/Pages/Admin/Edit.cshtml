@@ -1,12 +1,16 @@
 ﻿@page
 @using PublicDatabaseAPI.Models
 @model PublicSchoolProj.Pages.Admin.EditModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 @{
     ViewData["Title"] = "Edit";
     UserPage _prev = await Model.PreviewUserPage();
     List<string> _test = await Model.GetStringFromJson();
 }
+
 
 <h1>Edit</h1>
 
@@ -149,49 +153,56 @@
             @foreach (var block in Model.UserPageBlocks)
             {
                 <div class="border-light">
-                @if (block.ImagePath == null)
-                {
-                    <div class="block-pic one-row">
-                        <form method="post" enctype="multipart/form-data">
-                                <input type="file" class="form-control" asp-for="UploadedImage" />
-                            <input asp-page-handler="AddPic"
-                                   asp-route-id="@Model.UserPage.Id"
-                                    asp-route-target="@i"
-                                   id="Submit" type="submit" value="submit" />
-                        </form>
-                    </div>
-                }
-                else if (block.ImagePath.Length < 2)
+                    @if (Model.Images != null)
                     {
-                    <div class="block-pic one-row">
-                        <form method="post" enctype="multipart/form-data">
-                                <input type="file" class="form-control" asp-for="UploadedImage" />
-                            <input asp-page-handler="AddPic"
-                                   asp-route-id="@Model.UserPage.Id"
-                                    asp-route-target="@i"
-                                   id="Submit" type="submit" value="submit" />
-                            </form>
-                            <form method="post">
-                                <input asp-page-handler="RemovePic" asp-route-id="@Model.UserPage.Id" asp-route-target="@i" value="Remove Image" type="submit" />
-                            </form>
-                    </div>
-                }
-                else if (block.IsImagePathValid())
+
+                    }
+                    else
                     {
-                    <div class="form-group one-row">
-                        <img src="~/img/@block.ImagePath" class="small-pic-preview" />
-                            <form method="post" enctype="multipart/form-data">
+                        @if (block.ImagePath == null)
+                        {
+                            <div class="block-pic one-row">
+                                <form method="post" enctype="multipart/form-data">
                                     <input type="file" class="form-control" asp-for="UploadedImage" />
-                                <input asp-page-handler="AddPic"
-                                        asp-route-id="@Model.UserPage.Id"
+                                    <input asp-page-handler="AddPic"
+                                           asp-route-id="@Model.UserPage.Id"
                                            asp-route-target="@i"
-                                        id="Submit" type="submit" value="Replace" />
-                            </form>
-                            <form method="post">
-                                <input asp-page-handler="RemovePic" asp-route-id="@Model.UserPage.Id" asp-route-target="@i" value="Remove Image" type="submit" />
-                            </form>
-                    </div>
-                }
+                                           id="Submit" type="submit" value="submit" />
+                                </form>
+                            </div>
+                        }
+                        else if (block.ImagePath.Length < 2)
+                        {
+                            <div class="block-pic one-row">
+                                <form method="post" enctype="multipart/form-data">
+                                    <input type="file" class="form-control" asp-for="UploadedImage" />
+                                    <input asp-page-handler="AddPic"
+                                           asp-route-id="@Model.UserPage.Id"
+                                           asp-route-target="@i"
+                                           id="Submit" type="submit" value="submit" />
+                                </form>
+                                <form method="post">
+                                    <input asp-page-handler="RemovePic" asp-route-id="@Model.UserPage.Id" asp-route-target="@i" value="Remove Image" type="submit" />
+                                </form>
+                            </div>
+                        }
+                        else if (block.IsImagePathValid())
+                        {
+                            <div class="form-group one-row">
+                                <img src="~/img/@block.ImagePath" class="small-pic-preview" />
+                                <form method="post" enctype="multipart/form-data">
+                                    <input type="file" class="form-control" asp-for="UploadedImage" />
+                                    <input asp-page-handler="AddPic"
+                                           asp-route-id="@Model.UserPage.Id"
+                                           asp-route-target="@i"
+                                           id="Submit" type="submit" value="Replace" />
+                                </form>
+                                <form method="post">
+                                    <input asp-page-handler="RemovePic" asp-route-id="@Model.UserPage.Id" asp-route-target="@i" value="Remove Image" type="submit" />
+                                </form>
+                            </div>
+                        }
+                    }
                 
                 <form method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -201,8 +212,48 @@
                     <input type="hidden" value="@Model.UserPage.Id" asp-for="UserPageBlock.UserPageId" />
                     <input type="hidden" value="1" asp-for="UserPageBlock.Row" />
                     <input type="hidden" value="1" asp-for="UserPageBlock.Column" />
-                    <input type="hidden" value="@block.ImagePath" asp-for="UserPageBlock.ImagePath" />
-
+                        @if (Model.Images == null)
+                        {
+                            <input type="hidden" value="@block.ImagePath" asp-for="UserPageBlock.ImagePath" />
+                        }
+                        else
+                        {
+                            <select data-val="true" asp-for="@Model.UserPageBlock.ImagePath">
+                                @foreach (var sub_item in Model.Images)
+                                {
+                                    if (block.ImagePath != null)
+                                    {
+                                        if (block.IsImagePathValid() && block.ImagePath == sub_item.Value)
+                                        {
+                                            <option selected="selected" value="@sub_item.Value">
+                                                @sub_item.Text
+                                            </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@sub_item.Value">
+                                                @sub_item.Text
+                                            </option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (i == 0)
+                                        {
+                                            <option selected="selected" value="@sub_item.Value">
+                                                @sub_item.Text
+                                            </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@sub_item.Value">
+                                                @sub_item.Text
+                                            </option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        }
 
                     <div class="form-group">
                         <label asp-for="UserPageBlock.Title" class="control-label"></label>
@@ -231,6 +282,7 @@
                 </div>
                 i++;
             }
+
         }
     </div>
 </div>

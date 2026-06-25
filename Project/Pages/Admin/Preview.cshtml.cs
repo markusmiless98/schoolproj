@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
 
@@ -14,10 +15,14 @@ namespace PublicSchoolProj.Pages.Admin
     public class PreviewModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserPageController _controlPage;
+        private readonly UserPageBlockController _controlBlock;
 
         public PreviewModel(ApplicationDbContext context)
         {
             _context = context;
+            _controlPage = context.GetUserPageController();
+            _controlBlock = context.GetUserPageBlockController();
         }
 
         public UserPage UserPage { get; set; } = default!;
@@ -28,8 +33,12 @@ namespace PublicSchoolProj.Pages.Admin
             {
                 return NotFound();
             }
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Admin/Index");
+            }
 
-            var userpage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
+            var userpage = await _controlPage.Read((int)id);
             if (userpage == null)
             {
                 return NotFound();
@@ -38,7 +47,7 @@ namespace PublicSchoolProj.Pages.Admin
 
             UserPage.views++;
 
-            await _context.GetUserPageController().Update(UserPage);
+            await _controlPage.Update(UserPage);
 
             await SetUpLinks();
 
@@ -56,8 +65,8 @@ namespace PublicSchoolProj.Pages.Admin
                 List<Links> _links = new List<Links>();
                 foreach (var item in UserPage.GetLinks())
                 {
-
-                    var _linkedPage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == item);
+                    
+                    var _linkedPage = await _controlPage.Read(item);
                     if (_linkedPage != null)
                     {
                         _links.Add(new Links(_linkedPage.title, GetLink(item.ToString())));

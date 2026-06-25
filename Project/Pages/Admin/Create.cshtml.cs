@@ -22,6 +22,10 @@ namespace PublicSchoolProj.Pages.Admin
 
         public IActionResult OnGet()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Admin/Index");
+            }
             return Page();
         }
 

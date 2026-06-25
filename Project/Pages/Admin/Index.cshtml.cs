@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
 
@@ -13,17 +14,20 @@ namespace PublicSchoolProj.Pages.Admin
     public class IndexModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserPageController _controlPage;
+        private readonly UserPageBlockController _controlBlock;
 
         public IndexModel(ApplicationDbContext context)
         {
             _context = context;
+            _controlPage = context.GetUserPageController();
         }
 
         public IList<UserPage> UserPage { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            UserPage = await _context.UserPage.ToListAsync();
+            UserPage = await _controlPage.ReadAll();
         }
     }
 }

@@ -44,6 +44,9 @@ namespace PublicSchoolProj.Pages.Admin
 
         public List<SelectListItem> Images { get; set; }
 
+        [BindProperty]
+        public List<string> SelectedPic { get; set; }
+
         public List<string> _css { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -52,16 +55,34 @@ namespace PublicSchoolProj.Pages.Admin
             {
                 return NotFound();
             }
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Admin/Index");
+            }
 
             await GetUserPageById((int)id);
             if (UserPage == null)
             {
                 return NotFound();
             }
-            
+
             _linkOptions = await GetListOfItems();
 
-            //Images = await GetListOfImages();
+            Images = await GetListOfImages();
+
+            SelectedPic = new List<string>();
+            foreach (var item in UserPageBlocks)
+            {
+                if (item.IsImagePathValid())
+                {
+                    SelectedPic.Add(item.ImagePath);
+                }
+                else
+                {
+                    SelectedPic.Add(null);
+                }
+            }
+
 
             if (id != null)
             {
@@ -323,6 +344,32 @@ namespace PublicSchoolProj.Pages.Admin
 
             return Redirect(GetUserPage());
         }
+
+        public async Task<IActionResult> OnPostUpdatePicAsync(int id, int target, string? image)
+        {
+            await GetUserPageById(id);
+
+            var userpageblock = await _controlBlock.Read(target);
+
+            if (userpageblock != null)
+            {
+                UserPageBlock = userpageblock;
+
+                if (image != null)
+                {
+                    UserPageBlock.ImagePath = image;
+
+                    userpageblock.OverWrite(UserPageBlock);
+
+                    await _controlBlock.Update(userpageblock);
+
+                    return Redirect(GetUserPage());
+                }
+            }
+
+            return NotFound();
+        }
+
         public async Task<IActionResult> OnPostRemovePicAsync(int id, int target)
         {
             await GetUserPageById(id);
@@ -356,7 +403,12 @@ namespace PublicSchoolProj.Pages.Admin
         {
             await GetUserPageById(id, false);
 
-            var userpageblock = await _context.UserBlockPage.FindAsync(target);
+            var userpageblock = await _controlBlock.Read(target);
+
+            if (userpageblock == null)
+            {
+                return NotFound();
+            }
 
             userpageblock.OverWrite(UserPageBlock);
 
@@ -364,6 +416,27 @@ namespace PublicSchoolProj.Pages.Admin
 
             return Redirect(GetUserPage());
         }
+        public async Task<IActionResult> OnPostEditAllBlockAsync()
+        {
+            if (UserPageBlocks == null)
+            {
+                return NotFound(UserPageBlocks);
+            }
+            if (UserPage == null)
+            {
+                return NotFound(UserPage);
+            }
+
+            foreach (var item in UserPageBlocks)
+            {
+                await _controlBlock.AddToList(item);
+            }
+
+            //await _controlBlock.HandleFromList(EntityState.Modified, );
+
+            return Redirect(GetUserPage());
+        }
+
         public async Task<IActionResult> OnPostLinkAsync(int id)
         {
             await GetUserPageById(id, false);

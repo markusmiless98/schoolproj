@@ -27,6 +27,10 @@ namespace PublicSchoolProj.Pages.Admin
             {
                 return NotFound();
             }
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Admin/Index");
+            }
 
             var userpage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
             if (userpage == null)

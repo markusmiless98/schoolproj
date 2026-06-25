@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Cryptography;
+
 
 //using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +30,14 @@ namespace PublicDatabaseAPI.Controllers
             throw new NotImplementedException();
         }
         async Task Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+        async Task AddToList(int id)
+        {
+            throw new NotImplementedException();
+        }
+        async Task UpdateFromList()
         {
             throw new NotImplementedException();
         }
@@ -181,6 +191,82 @@ namespace PublicDatabaseAPI.Controllers
                         throw;
                     }
                 }
+            }
+        }
+
+        private List<UserPageBlock> _listToChange { get; set; }
+        public async Task AddToList(int id)
+        {
+            if (IsNotActive()) await SetUpCache();
+
+            if (_listToChange == null)
+            {
+                _listToChange = new List<UserPageBlock>();
+            }
+
+            UserPageBlock _block = await Read(id);
+
+            _listToChange.Add(_block);
+        }
+        public async Task AddToList(UserPageBlock _block)
+        {
+            if (_block == null) return;
+            if (IsNotActive()) await SetUpCache();
+
+            if (_listToChange == null)
+            {
+                _listToChange = new List<UserPageBlock>();
+            }
+
+            _listToChange.Add(_block);
+        }
+
+        public async Task HandleFromList(EntityState _state = EntityState.Modified, List<UserPageBlock> blocks = null)
+        {
+            if (blocks == null) return;
+
+            if (IsNotActive()) await SetUpCache();
+
+
+            foreach (var block in blocks)
+            {
+                if (block != null)
+                {
+                    UserPageBlock _temp = await Read(block.Id);
+                    _temp.OverWrite(block);
+                    _context.Attach(_temp).State = _state;
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                int i = blocks.Count - 1;
+                while (i > 0)
+                {
+                    UserPageBlock _block = await Read(blocks[i].Id);
+                    if (_block != null)
+                    {
+                        if (_state == EntityState.Modified)
+                        {
+                            _block.OverWrite(blocks[i]);
+                        }
+                        else if (_state == EntityState.Deleted)
+                        {
+                            _userblocks.Remove(_block);
+                        }
+                        else if (_state == EntityState.Added)
+                        {
+                            _userblocks.Add(blocks[i]);
+                        }
+                    }
+                    
+                    i--;
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new Exception("Failed to update blocks in list");
             }
         }
 

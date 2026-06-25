@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
 
@@ -13,10 +14,14 @@ namespace PublicSchoolProj.Pages.Admin
     public class DeleteModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserPageController _controlPage;
+        private readonly UserPageBlockController _controlBlock;
 
         public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
+            _controlPage = context.GetUserPageController();
+            _controlBlock = context.GetUserPageBlockController();
         }
 
         [BindProperty]
@@ -28,8 +33,12 @@ namespace PublicSchoolProj.Pages.Admin
             {
                 return NotFound();
             }
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Admin/Index");
+            }
 
-            var userpage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
+            var userpage = await _controlPage.Read((int)id);
 
             if (userpage == null)
             {
@@ -49,14 +58,15 @@ namespace PublicSchoolProj.Pages.Admin
                 return NotFound();
             }
 
-            var userpage = await _context.UserPage.FindAsync(id);
+            var userpage = await _controlPage.Read((int)id);
             if (userpage != null)
             {
                 UserPage = userpage;
 
+
                 // Clean up later
                 List<UserPageBlock> _tbd = new List<UserPageBlock>();
-                foreach (var item in _context.UserBlockPage)
+                foreach (var item in await _controlBlock.ReadAll())
                 {
                     if (item.UserPageId == UserPage.Id)
                     {
@@ -64,11 +74,9 @@ namespace PublicSchoolProj.Pages.Admin
                     }
                 }
 
-                _context.UserBlockPage.RemoveRange(_tbd);
+                await _controlBlock.HandleFromList(EntityState.Deleted, _tbd);
 
-                _context.UserPage.Remove(UserPage);
-
-                await _context.SaveChangesAsync();
+                await _controlPage.Delete(UserPage.Id);
             }
 
             return RedirectToPage("./Index");
@@ -84,11 +92,9 @@ namespace PublicSchoolProj.Pages.Admin
             var userblock_pages = await _context.UserBlockPage.ToListAsync();
             if (userpages != null)
             {
-                _context.UserBlockPage.RemoveRange(userblock_pages);
+                await _controlBlock.HandleFromList(EntityState.Deleted, userblock_pages);
 
-                _context.UserPage.RemoveRange(userpages);
-
-                await _context.SaveChangesAsync();
+                await _controlPage.HandleFromList(EntityState.Deleted, userpages);
             }
 
             return RedirectToPage("./Index");

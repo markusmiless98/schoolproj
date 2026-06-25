@@ -29,6 +29,10 @@ namespace PublicDatabaseAPI.Controllers
         {
             throw new NotImplementedException();
         }
+        async Task HandleFromList(EntityState _state, List<UserPage> blocks)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class UserPageController : IUserPageController
     {
@@ -207,6 +211,54 @@ namespace PublicDatabaseAPI.Controllers
                         throw;
                     }
                 }
+            }
+        }
+        public async Task HandleFromList(EntityState _state = EntityState.Modified, List<UserPage> blocks = null)
+        {
+            if (blocks == null) return;
+
+            if (IsNotActive()) await SetUpCache();
+
+
+            foreach (var block in blocks)
+            {
+                if (block != null)
+                {
+                    UserPage _temp = await Read(block.Id);
+                    _temp.OverWrite(block);
+                    _context.Attach(_temp).State = _state;
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                int i = blocks.Count - 1;
+                while (i > 0)
+                {
+                    UserPage _block = await Read(blocks[i].Id);
+                    if (_block != null)
+                    {
+                        if (_state == EntityState.Modified)
+                        {
+                            _block.OverWrite(blocks[i]);
+                        }
+                        else if (_state == EntityState.Deleted)
+                        {
+                            _userpages.Remove(_block);
+                        }
+                        else if (_state == EntityState.Added)
+                        {
+                            _userpages.Add(blocks[i]);
+                        }
+                    }
+
+                    i--;
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new Exception("Failed to update blocks in list");
             }
         }
 

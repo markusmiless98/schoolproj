@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PublicDatabaseAPI.Models
 {
@@ -9,7 +10,6 @@ namespace PublicDatabaseAPI.Models
         public string? ImagePath { get; set; } = "";
         public int Column { get; set; } = 0;
         public int Row { get; set; } = 0;
-
         public int Width { get; set; } = 1;
 
         public string? Title { get; set; } = "";
@@ -23,6 +23,10 @@ namespace PublicDatabaseAPI.Models
             if (Text == null && ImagePath == null)
             {
                 return false;
+            }
+            if (Text == null || Title == null)
+            {
+                FixIfBroken();
             }
 
 
