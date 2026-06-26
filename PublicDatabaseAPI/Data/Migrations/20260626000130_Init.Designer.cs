@@ -12,8 +12,8 @@ using PublicDatabaseAPI.Data;
 namespace PublicDatabaseAPI.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260610101344_UserPage")]
-    partial class UserPage
+    [Migration("20260626000130_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -227,7 +227,44 @@ namespace PublicDatabaseAPI.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PublicSchoolProj.Models.UserPage", b =>
+            modelBuilder.Entity("PublicDatabaseAPI.Models.LayoutCSS", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("LinkColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PicHeight")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PicWidth")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TextColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("TextSize")
+                        .HasColumnType("float");
+
+                    b.Property<string>("TitleColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("TitleSize")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LayoutCSS");
+                });
+
+            modelBuilder.Entity("PublicDatabaseAPI.Models.UserPage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -256,7 +293,7 @@ namespace PublicDatabaseAPI.Data.Migrations
                     b.ToTable("UserPage");
                 });
 
-            modelBuilder.Entity("PublicSchoolProj.Models.UserPageBlock", b =>
+            modelBuilder.Entity("PublicDatabaseAPI.Models.UserPageBlock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -343,14 +380,14 @@ namespace PublicDatabaseAPI.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PublicSchoolProj.Models.UserPageBlock", b =>
+            modelBuilder.Entity("PublicDatabaseAPI.Models.UserPageBlock", b =>
                 {
-                    b.HasOne("PublicSchoolProj.Models.UserPage", null)
+                    b.HasOne("PublicDatabaseAPI.Models.UserPage", null)
                         .WithMany("_blocks")
                         .HasForeignKey("UserPageId");
                 });
 
-            modelBuilder.Entity("PublicSchoolProj.Models.UserPage", b =>
+            modelBuilder.Entity("PublicDatabaseAPI.Models.UserPage", b =>
                 {
                     b.Navigation("_blocks");
                 });

@@ -1,23 +1,15 @@
-:root {
-    --link-color: blue;
-    --title-color: black;
-    --title-size: 20px;
-    --text-color: black;
-    --text-size: 10px;
+.links {
+color:Blue;
 }
-
-
-a{
-    color:var(--link-color);
-}
-
 .title {
-    color:var(--title-color);
-    --title-size:var(--title-size);
+color:Red;
+font-size:32px;
 }
-
-.text{
-    color:var(--text-color);
-    font-size:var(--text-size);
+.text {
+color:Black;
+font-size:18px;
 }
-
+img {
+width:180px;
+height:180px;
+}

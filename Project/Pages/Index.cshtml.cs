@@ -13,64 +13,25 @@ namespace PublicSchoolProj.Pages
         public string PostDetails { get; set; }
 
         [BindProperty]
-        public IFormFile UploadedImage { get; set; }
-        [BindProperty]
-        public string Description { get; set; }
-
-        [BindProperty]
-        public UserPage _UserPage { get; set; }
-
-        [BindProperty]
-        public UserPageManager PageManager { get; set; }
+        public List<UserPage> _pages { get; set; } = default!;
 
         public IndexModel(ILogger<IndexModel> logger)
         {
             _logger = logger;
-            if (PageManager == null)
-            {
-                PageManager = new UserPageManager();
-            }
         }
 
-        public void OnGet()
+        public void OnGet(List<UserPage>? _list)
         {
-            if (PageManager == null)
+            if (_list != null)
             {
-                PageManager = new UserPageManager();
+                _pages = _list;
             }
+
         }
 
         public async Task OnPost()
         {
-            if (UploadedImage == null && Description == null) return;
-
-
-            UserPage _page = PageManager._UserPage;
-            PageManager.CreateNewBlock(true);
-
-            if (UploadedImage != null)
-            {
-                string _txt = UploadedImage.FileName;
-                var file = "./wwwroot/img/" + _txt;
-                using (var fileStream = new FileStream(file, FileMode.OpenOrCreate))
-                {
-                    await UploadedImage.CopyToAsync(fileStream);
-                    _txt = file.ToString();
-                }
-            }
-            if (Description != null)
-            {
-                PageManager.SetDescriptionOfBlock(Description);
-            }
-
-            if (PageManager.ValidateOrDeleteBlock())
-            {
-                _page = PageManager._UserPage;
-                if (_page.IsValidPage())
-                {
-                    _UserPage = _page;
-                }
-            }
+            // Unsued now
         }
     }
 }

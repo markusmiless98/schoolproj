@@ -41,9 +41,33 @@ namespace PublicDatabaseAPI.Models
         public List<UserPageBlock> GetBlocks()
         {
             if (_blocks == null) return null;
-            _blocks = BlockSort(_blocks);
+
+            _blocks.Sort(BlockSort);
 
             return _blocks;
+        }
+
+        public int BlockSort(UserPageBlock A, UserPageBlock B)
+        {
+            if (A.Row > B.Row)
+            {
+                return 1;
+            }
+            if (B.Row < A.Row)
+            {
+                return -1;
+            }
+
+            if (A.Column > B.Column)
+            {
+                return 1;
+            }
+            if (B.Column > A.Column)
+            {
+                return -1;
+            }
+
+            return 0;
         }
 
         public List<int> GetLinks()
@@ -162,11 +186,5 @@ namespace PublicDatabaseAPI.Models
             }
         }
 
-        private List<UserPageBlock> BlockSort(List<UserPageBlock> _list)
-        {
-            List<UserPageBlock> week = _list;
-            week.Sort(delegate (UserPageBlock c1, UserPageBlock c2) { return c1.GetPositionValue().CompareTo(c2.GetPositionValue()); });
-            return week;
-        }
     }
 }

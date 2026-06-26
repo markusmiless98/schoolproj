@@ -8,6 +8,7 @@
 @{
     ViewData["Title"] = "Edit";
     UserPage _prev = await Model.PreviewUserPage();
+    bool debuging = true;
 }
 
 
@@ -151,7 +152,7 @@
             @foreach (var block in Model.UserPageBlocks)
             {
                 <div class="border-light">
-                    @if (Model.Images != null)
+                    @if (Model.Images != null && debuging)
                     {
 
                     }
@@ -208,8 +209,14 @@
                     <input type="hidden" value="@Model.UserPageBlocks[i].Id" asp-for="UserPageBlock"/>
                     <input type="hidden" value="@block.Id" asp-for="UserPageBlocks" />
                     <input type="hidden" value="@Model.UserPage.Id" asp-for="UserPageBlock.UserPageId" />
-                    <input type="hidden" value="1" asp-for="UserPageBlock.Row" />
-                    <input type="hidden" value="1" asp-for="UserPageBlock.Column" />
+                    <div>
+                        Row;
+                            <input type="number" value="@block.Row" asp-for="UserPageBlock.Row" />
+                        </div>
+                        <div>
+                            Column;
+                            <input type="number" value="@block.Column" asp-for="UserPageBlock.Column">
+                        </div>
                         @if (Model.Images == null)
                         {
                             <input type="hidden" value="@block.ImagePath" asp-for="UserPageBlock.ImagePath" />
@@ -217,6 +224,18 @@
                         else
                         {
                             <select data-val="true" asp-for="@Model.UserPageBlock.ImagePath">
+                                @if (!block.IsImagePathValid())
+                                {
+                                    <option selected="selected" value="NONE">
+                                        None
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="NONE">
+                                        None
+                                    </option>
+                                }
                                 @foreach (var sub_item in Model.Images)
                                 {
                                     if (block.ImagePath != null)
@@ -236,9 +255,9 @@
                                     }
                                     else
                                     {
-                                        if (i == 0)
+                                        if (i == 0 && !block.IsImagePathValid())
                                         {
-                                            <option selected="selected" value="@sub_item.Value">
+                                            <option value="@sub_item.Value">
                                                 @sub_item.Text
                                             </option>
                                         }

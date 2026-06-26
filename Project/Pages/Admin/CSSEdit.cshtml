@@ -2,20 +2,10 @@
 @model PublicSchoolProj.Pages.Admin.CSSEditModel
 
 @{
-    Layout = null;
+    ViewData["Title"] = "CSSEdit";
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>CSSEdit</title>
-</head>
-<body>
-
 <h4>LayoutCSS</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
@@ -23,7 +13,7 @@
             <input type="hidden" asp-for="LayoutCSS.Id" />
             <div class="form-group">
                 <label asp-for="LayoutCSS.LinkColor" class="control-label"></label>
-                <input asp-for="LayoutCSS.LinkColor" class="form-control" />
+                <input asp-for="LayoutCSS.LinkColor" value="@Model.LayoutCSS.LinkColor" class="form-control" />
                 <span asp-validation-for="LayoutCSS.LinkColor" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -56,6 +46,9 @@
                 <input asp-for="LayoutCSS.PicHeight" class="form-control" />
                 <span asp-validation-for="LayoutCSS.PicHeight" class="text-danger"></span>
             </div>
+            <div class="right-side">
+                <img class="" name="image-preview" src="~/img/guy one.png" />
+            </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -70,5 +63,3 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-</body>
-</html>

@@ -4,26 +4,25 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
-    Model.PageManager = new PublicDatabaseAPI.Models.UserPageManager();
 }
 <div class="text-center">
     @if (SignInManager.IsSignedIn(User))
     {
         <div>
-            <p>Here you can make a page</p>
-            <form method="post" enctype="multipart/form-data">
-                <input type="file" class="form-control" name="UploadedImage" />
-                <textarea cols="20" rows="3" name="Description"></textarea>
-                <input id="Submit" type="submit" value="submit" />
-            </form>
+            <a asp-page="./Admin/Index">Go To Admin Page</a>
+            @if (Model._pages != null)
+            {
+                @foreach (var item in Model._pages)
+                {
+                    <div class="one-row">
+                        <p>Go To: </p> <a asp-page="./Admin/Preview?Id=@item.Id">@item.title</a>
+                    </div>
+                }
+            }
         </div>
     }
     else
     {
         <p>Log in</p>
-    }
-    @if (Model._UserPage != null)
-    {
-        <partial name="CustomPage" for="@Model._UserPage" />
     }
 </div>

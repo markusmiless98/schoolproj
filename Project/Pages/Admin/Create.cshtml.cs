@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
 
@@ -14,10 +15,12 @@ namespace PublicSchoolProj.Pages.Admin
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserPageController _pageControl;
 
         public CreateModel(ApplicationDbContext context)
         {
             _context = context;
+            _pageControl = context.GetUserPageController();
         }
 
         public IActionResult OnGet()
@@ -54,16 +57,14 @@ namespace PublicSchoolProj.Pages.Admin
                 UserPage.GetBlock(0).Id = _id;
                 */
             }
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return Page();
+            //}
 
-
-            _context.UserPage.Add(UserPage);
-
+            await _pageControl.Create(UserPage);
             //_context.UserBlockPage.AddRange(UserPage._blocks);
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

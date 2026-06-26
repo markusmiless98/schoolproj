@@ -36,7 +36,7 @@ namespace PublicCssAPI.DataType
         public List<string> ConvertIntoString()
         {
             List<string> _strings = new List<string>();
-            _strings.Add("a {");
+            _strings.Add(".links {");
             _strings.Add("color:" + LinkColor + ";");
             _strings.Add("}");
             _strings.Add(".title {");

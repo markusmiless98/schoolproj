@@ -44,3 +44,11 @@ body {
     width:200px;
     height:200px;
 }
+
+@media (min-width: 768px) {
+    .right-side {
+        position: absolute;
+        right: 40%;
+        top: 10%;
+    }
+}

@@ -175,7 +175,8 @@ namespace PublicSchoolProj.Pages.Admin
 
         private async Task GetUserBlockPageById(int id)
         {
-            UserPageBlocks = await _controlBlock.ReadAll();
+            UserPageBlocks = await _controlBlock.ReadAll(id);
+
             if (UserPageBlocks == null)
             {
                 throw new Exception("Failed to load the user blocks from page with ID " + id);
@@ -189,7 +190,33 @@ namespace PublicSchoolProj.Pages.Admin
                         UserPage.GetBlocks().Add(item);
                     }
                 }
+
+                List<UserPageBlock> _sort = (List<UserPageBlock>)UserPageBlocks;
+                _sort.Sort(SortByRowColumn);
             }
+        }
+
+        private int SortByRowColumn(UserPageBlock A, UserPageBlock B)
+        {
+            if (A.Row > B.Row)
+            {
+                return 1;
+            }
+            if (B.Row < A.Row)
+            {
+                return -1;
+            }
+
+            if (A.Column > B.Column)
+            {
+                return 1;
+            }
+            if (B.Column > A.Column)
+            {
+                return -1;
+            }
+
+            return 0;
         }
 
         public async Task<PreviewModel> MakePreview()
@@ -400,6 +427,12 @@ namespace PublicSchoolProj.Pages.Admin
             if (userpageblock == null)
             {
                 return NotFound();
+            }
+
+            if (UserPageBlock.ImagePath == "NONE")
+            {
+                UserPageBlock.ImagePath = "";
+                userpageblock.ImagePath = "";
             }
 
             userpageblock.OverWrite(UserPageBlock);

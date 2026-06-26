@@ -15,7 +15,7 @@
 		@foreach (var item in Model.links)
 		{
 			<div>
-				<a href="/@item">@item</a>
+				<a class="links" href="/@item">@item</a>
 			</div>
 		}
 	}
@@ -60,9 +60,6 @@
 				}
 				<p>
 					@_page.Text
-				</p>
-				<p>
-					Temp; @_page.Id
 				</p>
 			</div>
 		}

@@ -162,6 +162,31 @@ namespace PublicDatabaseAPI.Controllers
             throw new Exception("Pages to be viewed not Found");
         }
 
+        public async Task<List<UserPageBlock>> ReadAll(int _id)
+        {
+            if (IsNotActive()) await SetUpCache();
+
+            if (_userblocks != null)
+            {
+                List<UserPageBlock> _list = _userblocks.FindAll(m => m.UserPageId == _id);
+                if (_list != null)
+                {
+                    return _list;
+                }
+            }
+            else
+            {
+                _userblocks = await _context.UserBlockPage.ToListAsync();
+
+                if (_userblocks != null)
+                {
+                    return await ReadAll(_id);
+                }
+            }
+
+            return null;
+        }
+
         public async Task Update(UserPageBlock modifier_page)
         {
             if (IsNotActive()) await SetUpCache();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace PublicDatabaseAPI.Models
         public List<string> ConvertIntoString()
         {
             List<string> _strings = new List<string>();
-            _strings.Add("a {");
+            _strings.Add(".links {");
             _strings.Add("color:" + LinkColor + ";");
             _strings.Add("}");
             _strings.Add(".title {");
@@ -77,6 +78,59 @@ namespace PublicDatabaseAPI.Models
             TextSize = Convert.ToDouble(GetTrimmedString(_strings[4]));
             PicWidth = Convert.ToInt32(GetTrimmedString(_strings[5]));
             PicHeight = Convert.ToInt32(GetTrimmedString(_strings[6]));
+        }
+
+        public void OverWrite(LayoutCSS _overwriter)
+        {
+            if (_overwriter.LinkColor != null)
+            {
+                this.LinkColor = _overwriter.LinkColor;
+                Debug.WriteLine("Link");
+            }
+            if (_overwriter.TitleColor != null)
+            {
+                this.TitleColor = _overwriter.TitleColor;
+                Debug.WriteLine(this.TitleColor + " IS ? " + _overwriter.TitleColor);
+            }
+            if (_overwriter.TitleSize != null)
+            {
+                if (_overwriter.TitleSize > 0)
+                {
+                    this.TitleSize = _overwriter.TitleSize;
+                    Debug.WriteLine("TITLE SIZE");
+                }
+            }
+            if (_overwriter.TextColor != null)
+            {
+                this.TextColor = _overwriter.TextColor;
+                Debug.WriteLine("TEXT COLOR");
+            }
+            if (_overwriter.TextSize != null)
+            {
+                if (_overwriter.TextSize > 0)
+                {
+                    this.TextSize = _overwriter.TextSize;
+                    Debug.WriteLine("TEXT SIZE");
+                }
+            }
+            if (_overwriter.PicHeight != null)
+            {
+                if (_overwriter.PicHeight > 0)
+                {
+                    this.PicHeight = _overwriter.PicHeight;
+                    Debug.WriteLine("Pic Height");
+                }
+            }
+            if (_overwriter.PicWidth != null)
+            {
+                if (_overwriter.PicWidth > 0)
+                {
+                    this.PicWidth = _overwriter.PicWidth;
+                    Debug.WriteLine("Pic Width");
+                }
+            }
+
+            Debug.WriteLine("Attempts Done");
         }
         private string GetTrimmedString(string _str)
         {
