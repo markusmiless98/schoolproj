@@ -1,8 +1,11 @@
 ﻿@page
 @model PublicSchoolProj.Pages.Admin.CreateModel
+@using PublicDatabaseAPI.Controllers
+@inject PublicDatabaseAPI.Controllers.IUserPageController userPageController;
 
 @{
     ViewData["Title"] = "Create";
+    int _val = await Model.GetNewId();
 }
 
 <h1>Create</h1>
@@ -11,30 +14,31 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
+        <form method="post" asp-route="UserPage" id="form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" value="@_val" id="Id" />
             <div class="form-group">
                 <label asp-for="UserPage.title" class="control-label"></label>
-                <input asp-for="UserPage.title" class="form-control" />
+                <input asp-for="UserPage.title" id="title" class="form-control" />
                 <span asp-validation-for="UserPage.title" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="UserPage.description" class="control-label"></label>
-                <input asp-for="UserPage.description" class="form-control" />
+                <input asp-for="UserPage.description" id="description" class="form-control" />
                 <span asp-validation-for="UserPage.description" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="UserPage.views" class="control-label"></label>
-                <input asp-for="UserPage.views" class="form-control" />
+                <input asp-for="UserPage.views" id="views" class="form-control" />
                 <span asp-validation-for="UserPage.views" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="UserPage.links" class="control-label"></label>
-                <input asp-for="UserPage.links" class="form-control" />
+                <input asp-for="UserPage.links" id="links" class="form-control" />
                 <span asp-validation-for="UserPage.links" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" id="create" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -43,6 +47,7 @@
 <div>
     <a asp-page="Index">Back to List</a>
 </div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

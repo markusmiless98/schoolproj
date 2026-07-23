@@ -1,26 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace PublicSchoolProj.Pages.Admin
 {
     public class CreateModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        //private readonly ApplicationDbContext _context;
         private readonly UserPageController _pageControl;
 
-        public CreateModel(ApplicationDbContext context)
+        public CreateModel(IUserPageController context)
         {
-            _context = context;
-            _pageControl = context.GetUserPageController();
+            //_context = context;
+            
+            _pageControl = (UserPageController)context;
         }
 
         public IActionResult OnGet()
@@ -38,40 +40,26 @@ namespace PublicSchoolProj.Pages.Admin
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            //UserPage._blocks.Add(new UserPageBlock());
             UserPage.Id = await GetNewId();
             if (UserPage.userId == null)
             {
                 UserPage.userId = UserPage.Id;
-                /*
-                UserPage.GetBlock(0).UserPageId = UserPage.userId;
-                List<UserPageBlock> _blocks = await _context.UserBlockPage.ToListAsync();
-                int _id = 1;
-                foreach (var item in _blocks)
-                {
-                    if (item.Id == _id)
-                    {
-                        _id = item.Id + 1;
-                    }
-                }
-                UserPage.GetBlock(0).Id = _id;
-                */
             }
-            //if (!ModelState.IsValid)
-            //{
-            //    return Page();
-            //}
 
             await _pageControl.Create(UserPage);
-            //_context.UserBlockPage.AddRange(UserPage._blocks);
-            //await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            // TO BE DONE; Deserialize from JSON the UserPage then send it using 'await client. PostAsync ( " api /Products/" , httpContent );'
+
+            //await _pageControl.Create(UserPage);
+
+
+            return Page(); // To check i guess
+            //return RedirectToPage("./Index");
         }
 
         public virtual async Task<int> GetNewId()
         {
-            var _pages = await _context.UserPage.ToListAsync();
+            var _pages = await _pageControl.ReadAll();
 
             if (_pages != null)
             {

@@ -1,9 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 //using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PublicDatabaseAPI.Controllers
 {
@@ -34,6 +36,9 @@ namespace PublicDatabaseAPI.Controllers
             throw new NotImplementedException();
         }
     }
+
+    [Route("/UserPage")]
+    [ApiController]
     public class UserPageController : IUserPageController
     {
         private readonly ApplicationDbContext _context;
@@ -59,7 +64,20 @@ namespace PublicDatabaseAPI.Controllers
             _active = true;
         }
 
-        public async Task Create(UserPage userpage)
+        public async Task Create()
+        {
+            UserPage _page = new UserPage();
+            _page.title = "Page";
+            _page.description = "";
+            _page.views = 0;
+            _page.Id = await GetUserPageId();
+
+            await Create(_page);
+        }
+
+        // GET: /UserPage
+        [HttpPost]
+        public async Task Create([FromBody] UserPage userpage)
         {
             if (IsNotActive()) await SetUpCache();
             
@@ -83,6 +101,27 @@ namespace PublicDatabaseAPI.Controllers
             }
         }
 
+        // GET: api/UserPage
+        [HttpGet]
+        public async Task<List<UserPage>> ReadAll()
+        {
+            if (IsNotActive()) await SetUpCache();
+
+            if (_userpages != null)
+            {
+                return _userpages;
+            }
+            else
+            {
+                _userpages = await _context.UserPage.ToListAsync();
+                return _userpages;
+            }
+
+            throw new Exception("Pages to be viewed not Found");
+        }
+
+        // GET: api/UserPage/X
+        [HttpGet("{id}", Name = "Get")]
         public async Task<UserPage> Read(int id)
         {
             if (IsNotActive()) await SetUpCache();
@@ -133,23 +172,6 @@ namespace PublicDatabaseAPI.Controllers
                     }
                 }
             }
-        }
-
-        public async Task<List<UserPage>> ReadAll()
-        {
-            if (IsNotActive()) await SetUpCache();
-
-            if (_userpages != null)
-            {
-                return _userpages;
-            }
-            else
-            {
-                _userpages = await _context.UserPage.ToListAsync();
-                return _userpages;
-            }
-
-            throw new Exception("Pages to be viewed not Found");
         }
 
         public async Task Update(UserPage modifier_page)
@@ -269,6 +291,23 @@ namespace PublicDatabaseAPI.Controllers
         private bool UserPageExists(int id)
         {
             return _context.UserPage.Any(e => e.Id == id);
+        }
+
+        private async Task<int> GetUserPageId()
+        {
+            int _id = 0;
+
+            List<UserPage> _pages = await ReadAll();
+
+            foreach (var item in _pages)
+            {
+                if (_id <= item.Id)
+                {
+                    _id = item.Id + 1;
+                }
+            }
+
+            return _id;
         }
     }
 }

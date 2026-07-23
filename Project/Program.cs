@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,16 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
+
+builder.Services.AddHttpClient("UserPage", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:44386");
+});
+
+builder.Services.AddScoped<IUserPageController, UserPageController>();
+builder.Services.AddScoped<IUserPageBlockController, UserPageBlockController>();
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -34,6 +45,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllers();
 
 app.MapRazorPages();
 

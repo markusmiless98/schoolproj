@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicCssAPI", "..\PublicCs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicDatabaseAPI", "..\PublicDatabaseAPI\PublicDatabaseAPI.csproj", "{0AF2E506-75C8-417B-8A53-FD41EBD5C25A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PageDatabaseAPI", "..\PageDatabaseAPI\PageDatabaseAPI.csproj", "{C77F8ECF-066F-4993-924E-D88A12A4B6E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{0AF2E506-75C8-417B-8A53-FD41EBD5C25A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AF2E506-75C8-417B-8A53-FD41EBD5C25A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AF2E506-75C8-417B-8A53-FD41EBD5C25A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C77F8ECF-066F-4993-924E-D88A12A4B6E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C77F8ECF-066F-4993-924E-D88A12A4B6E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C77F8ECF-066F-4993-924E-D88A12A4B6E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C77F8ECF-066F-4993-924E-D88A12A4B6E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

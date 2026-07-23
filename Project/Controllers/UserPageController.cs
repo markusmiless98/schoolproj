@@ -7,8 +7,6 @@ using PublicDatabaseAPI.Models;
 
 namespace PublicSchoolProj.Controllers
 {
-    [ApiController]
-    [Route("/api/[controller]")]
     public class UserPageController : Controller
     {
         private readonly IUserPageController _UserPageController;
