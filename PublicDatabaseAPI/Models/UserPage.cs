@@ -136,6 +136,13 @@ namespace PublicDatabaseAPI.Models
             }
             return true;
         }
+        public void RemoveLinkById(int _id)
+        {
+            if (GetLinks().Contains(_id))
+            {
+                links.Remove(_id.ToString());
+            }
+        }
 
         public UserPageBlock GetBlock(int id)
         {

@@ -5,6 +5,7 @@ using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace PublicDatabaseAPI.Controllers
@@ -130,6 +131,7 @@ namespace PublicDatabaseAPI.Controllers
 
             if (_page != null)
             {
+                _page._listOfLinks = await GetLinksFromID(_page);
                 return _page;
             }
             else
@@ -137,11 +139,12 @@ namespace PublicDatabaseAPI.Controllers
                 _page = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
                 if (_page != null)
                 {
+                    _page._listOfLinks = await GetLinksFromID(_page);
                     return _page;
                 }
             }
 
-            throw new Exception("Page to be viewed not Found");
+            //throw new Exception("Page to be viewed not Found");
             return null;
         }
 
@@ -160,8 +163,19 @@ namespace PublicDatabaseAPI.Controllers
 
                 try
                 {
-                    await _context.SaveChangesAsync();
                     _userpages.Remove(_page);
+
+                    var _referpages = _userpages.Where(m => m.GetLinks().Contains(m.Id));
+
+                    if (_referpages != null)
+                    {
+                        foreach (var item in _referpages)
+                        {
+                            item.RemoveLinkById(id);
+                            _context.Attach(item).State = EntityState.Modified;
+                        }
+                    }
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -298,6 +312,41 @@ namespace PublicDatabaseAPI.Controllers
             return _context.UserPage.Any(e => e.Id == id);
         }
 
+        private bool _accessing = false;
+        private async Task<List<Links>> GetLinksFromID(UserPage _page)
+        {
+            if (_accessing) return null;
+
+            if (_page.GetLinks() == null)
+            {
+                return null;
+            }
+            if (_page.GetLinks().Count < 1)
+            {
+                return null;
+            }
+
+            List<Links> _links = new List<Links>();
+
+            _accessing = true;
+            foreach (var item in _page.GetLinks())
+            {
+                UserPage targ = await Read(item);
+                if (targ != null)
+                {
+                    Links _link = new Links(targ.title, item.ToString());
+                    _links.Add(_link);
+                }
+            }
+            _accessing = false;
+
+            if (_links.Count > 0)
+            {
+                return _links;
+            }
+
+            return null;
+        }
         private async Task<int> GetUserPageId()
         {
             int _id = 0;

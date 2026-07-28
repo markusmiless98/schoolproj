@@ -241,16 +241,18 @@ namespace PublicSchoolProj.Pages.Admin
 
             UserPage _page = new UserPage();
             _page = _prev;
-
+            /*
             List<Links> _linkedList = await SetUpLinks();
             if (_linkedList != null)
             {
                 _page._listOfLinks = _linkedList;
             }
+            */
 
             return _prev;
         }
 
+        /*
         private async Task<List<Links>> SetUpLinks()
         {
             if (UserPage == null) return null;
@@ -279,6 +281,7 @@ namespace PublicSchoolProj.Pages.Admin
             if (_id == null) return "";
             return "Admin/Edit?id=" + _id;
         }
+        */
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.

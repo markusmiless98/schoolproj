@@ -15,7 +15,7 @@
 		@foreach (var item in Model.links)
 		{
 			<div>
-				<a class="links" href="/@item">@item</a>
+				<a class="links" href="./@item">@item</a>
 			</div>
 		}
 	}
@@ -24,7 +24,7 @@
 		@foreach (var item in Model._listOfLinks)
 		{
 			<div>
-				<a href="/@item._link">@item._text</a>
+				<a href="./@item._link">@item._text</a>
 			</div>
 		}
 	}
@@ -33,7 +33,7 @@
 		@foreach (var item in Model.links)
 		{
 			<div>
-				<a href="/@item">@item</a>
+				<a href="./@item">@item</a>
 			</div>
 		}
 	}

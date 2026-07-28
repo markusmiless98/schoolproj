@@ -56,8 +56,8 @@ namespace PublicSchoolProj.Pages
                         if (item == _page)
                         {
                             item._blocks = await _blockContext.ReadAll(id);
-                            //item.views++;
-                            //await _context.Update(item);
+                            item.views++;
+                            await _context.Update(item);
                             break;
                         }
                         _focus++;

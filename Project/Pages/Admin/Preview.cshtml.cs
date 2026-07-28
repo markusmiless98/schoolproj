@@ -43,16 +43,13 @@ namespace PublicSchoolProj.Pages.Admin
             }
             UserPage = userpage;
 
-            UserPage.views++;
-
-            await _controlPage.Update(UserPage);
-
-            await SetUpLinks();
+            //await SetUpLinks();
 
             return Page();
         }
 
-
+        // API handles it now
+        /*
         private async Task SetUpLinks()
         {
             if (UserPage == null) return;
@@ -73,6 +70,7 @@ namespace PublicSchoolProj.Pages.Admin
                 UserPage._listOfLinks = _links;
             }
         }
+        */
         private string GetLink(string _id)
         {
             if (_id == null) return "";
