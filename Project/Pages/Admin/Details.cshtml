@@ -1,5 +1,7 @@
 ﻿@page
 @model PublicSchoolProj.Pages.Admin.DetailsModel
+@inject PublicDatabaseAPI.Controllers.IUserPageController userPageController;
+@inject PublicDatabaseAPI.Controllers.IUserPageBlockController userPageBlockController;
 
 @{
     ViewData["Title"] = "Details";

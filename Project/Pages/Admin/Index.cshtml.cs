@@ -13,14 +13,11 @@ namespace PublicSchoolProj.Pages.Admin
 {
     public class IndexModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserPageController _controlPage;
-        private readonly UserPageBlockController _controlBlock;
 
-        public IndexModel(ApplicationDbContext context)
+        public IndexModel(IUserPageController context)
         {
-            _context = context;
-            _controlPage = context.GetUserPageController();
+            _controlPage = (UserPageController)context;
         }
 
         public IList<UserPage> UserPage { get;set; } = default!;

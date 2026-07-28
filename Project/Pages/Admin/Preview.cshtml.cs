@@ -14,15 +14,13 @@ namespace PublicSchoolProj.Pages.Admin
 {
     public class PreviewModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserPageController _controlPage;
         private readonly UserPageBlockController _controlBlock;
 
-        public PreviewModel(ApplicationDbContext context)
+        public PreviewModel(IUserPageController _context, IUserPageBlockController _contextBlock)
         {
-            _context = context;
-            _controlPage = context.GetUserPageController();
-            _controlBlock = context.GetUserPageBlockController();
+            _controlPage = (UserPageController)_context;
+            _controlBlock = (UserPageBlockController)_contextBlock;
         }
 
         public UserPage UserPage { get; set; } = default!;

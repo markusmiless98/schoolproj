@@ -4,6 +4,8 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject PublicDatabaseAPI.Controllers.IUserPageController userPageController;
+@inject PublicDatabaseAPI.Controllers.IUserPageBlockController userPageBlockController;
 
 @{
     ViewData["Title"] = "Edit";

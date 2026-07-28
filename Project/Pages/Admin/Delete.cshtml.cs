@@ -13,15 +13,13 @@ namespace PublicSchoolProj.Pages.Admin
 {
     public class DeleteModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserPageController _controlPage;
         private readonly UserPageBlockController _controlBlock;
 
-        public DeleteModel(ApplicationDbContext context)
+        public DeleteModel(IUserPageController _page, IUserPageBlockController _block)
         {
-            _context = context;
-            _controlPage = context.GetUserPageController();
-            _controlBlock = context.GetUserPageBlockController();
+            _controlPage = (UserPageController) _page;
+            _controlBlock = (UserPageBlockController) _block;
         }
 
         [BindProperty]
@@ -88,8 +86,8 @@ namespace PublicSchoolProj.Pages.Admin
                 return NotFound();
             }
 
-            var userpages = await _context.UserPage.ToListAsync();
-            var userblock_pages = await _context.UserBlockPage.ToListAsync();
+            var userpages = await _controlPage.ReadAll();
+            var userblock_pages = await _controlBlock.ReadAll();
             if (userpages != null)
             {
                 await _controlBlock.HandleFromList(EntityState.Deleted, userblock_pages);

@@ -101,7 +101,7 @@ namespace PublicDatabaseAPI.Controllers
             }
         }
 
-        // GET: api/UserPage
+        // GET: /UserPage
         [HttpGet]
         public async Task<List<UserPage>> ReadAll()
         {
@@ -120,8 +120,8 @@ namespace PublicDatabaseAPI.Controllers
             throw new Exception("Pages to be viewed not Found");
         }
 
-        // GET: api/UserPage/X
-        [HttpGet("{id}", Name = "Get")]
+        // GET: /UserPage/X
+        [HttpGet("{id}", Name = "GetPage")]
         public async Task<UserPage> Read(int id)
         {
             if (IsNotActive()) await SetUpCache();
@@ -142,8 +142,11 @@ namespace PublicDatabaseAPI.Controllers
             }
 
             throw new Exception("Page to be viewed not Found");
+            return null;
         }
 
+        // DELETE: /UserPage/X
+        [HttpDelete("{id}")]
         public async Task Delete(int id)
         {
             if (IsNotActive()) await SetUpCache();
@@ -174,6 +177,7 @@ namespace PublicDatabaseAPI.Controllers
             }
         }
 
+        [HttpPut("{id}")]
         public async Task Update(UserPage modifier_page)
         {
             if (IsNotActive()) await SetUpCache();
@@ -205,6 +209,7 @@ namespace PublicDatabaseAPI.Controllers
                 }
             }
         }
+        [HttpPut]
         public async Task Update(UserPageBlock _block)
         {
             if (IsNotActive()) await SetUpCache();

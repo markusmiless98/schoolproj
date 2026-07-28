@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
 
@@ -12,11 +13,11 @@ namespace PublicSchoolProj.Pages.Admin
 {
     public class DetailsModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly UserPageController _context;
 
-        public DetailsModel(ApplicationDbContext context)
+        public DetailsModel(IUserPageController context)
         {
-            _context = context;
+            _context = (UserPageController) context;
         }
 
         public UserPage UserPage { get; set; } = default!;
@@ -32,7 +33,7 @@ namespace PublicSchoolProj.Pages.Admin
                 return RedirectToPage("/Admin/Index");
             }
 
-            var userpage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == id);
+            var userpage = await _context.Read((int)id);
             if (userpage == null)
             {
                 return NotFound();

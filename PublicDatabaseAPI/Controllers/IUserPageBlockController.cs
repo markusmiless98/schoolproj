@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Mvc;
+
 
 
 //using System.Diagnostics;
@@ -42,6 +44,8 @@ namespace PublicDatabaseAPI.Controllers
             throw new NotImplementedException();
         }
     }
+    [Route("/UserPageBlock")]
+    [ApiController]
     public class UserPageBlockController : IUserPageBlockController
     {
         private readonly ApplicationDbContext _context;
@@ -67,6 +71,7 @@ namespace PublicDatabaseAPI.Controllers
             _active = true;
         }
 
+        [HttpPost]
         public async Task Create(UserPageBlock userblock)
         {
             if (IsNotActive()) await SetUpCache();
@@ -91,6 +96,8 @@ namespace PublicDatabaseAPI.Controllers
             }
         }
 
+        // GET: /UserPageBlock/X
+        [HttpGet("{id}", Name = "GetBlock")]
         public async Task<UserPageBlock> Read(int id)
         {
             if (IsNotActive()) await SetUpCache();
@@ -113,6 +120,7 @@ namespace PublicDatabaseAPI.Controllers
             throw new Exception("Page to be viewed not Found");
         }
 
+        [HttpDelete]
         public async Task Delete(int id)
         {
             if (IsNotActive()) await SetUpCache();
@@ -145,6 +153,8 @@ namespace PublicDatabaseAPI.Controllers
             }
         }
 
+        // GET: /UserPageBlock
+        [HttpGet]
         public async Task<List<UserPageBlock>> ReadAll()
         {
             if (IsNotActive()) await SetUpCache();

@@ -20,13 +20,11 @@ namespace PublicSchoolProj.Pages.Admin
 {
     public class EditModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserPageController _controlPage;
         private readonly UserPageBlockController _controlBlock;
 
         public EditModel(ApplicationDbContext context)
         {
-            _context = context;
             _controlPage = context.GetUserPageController();
             _controlBlock = context.GetUserPageBlockController();
         }
@@ -97,12 +95,19 @@ namespace PublicSchoolProj.Pages.Admin
         {
             if (_linkOptions != null) return _linkOptions;
 
-            return await _context.UserPage.Select(a =>
+            List<UserPage> _pages = await _controlPage.ReadAll();
+
+            if (_pages == null)
+            {
+                return null;
+            }
+
+            return _pages.Select(a =>
             new SelectListItem
             {
                 Value = a.Id.ToString(),
                 Text = a.title
-            }).ToListAsync();
+            }).ToList();
         }
 
         private async Task<List<SelectListItem>> GetListOfImages()
@@ -221,15 +226,17 @@ namespace PublicSchoolProj.Pages.Admin
 
         public async Task<PreviewModel> MakePreview()
         {
-            PreviewModel _prev = new PreviewModel(_context);
+            PreviewModel _prev = new PreviewModel(_controlPage, _controlBlock);
             await _prev.OnGetAsync(UserPage.Id);
             return _prev;
         }
 
         public async Task<UserPage> PreviewUserPage()
         {
-            var _prev = await _context.UserPage.Where(m => m.Id == UserPage.Id).FirstAsync();
+            List<UserPage> _pages = await _controlPage.ReadAll();
 
+            var _prev = _pages.Where(m => m.Id == UserPage.Id).First();
+            
             if (_prev == null) return null;
 
             UserPage _page = new UserPage();
@@ -254,7 +261,9 @@ namespace PublicSchoolProj.Pages.Admin
                 List<Links> _links = new List<Links>();
                 foreach (var item in UserPage.GetLinks())
                 {
-                    var _linkedPage = await _context.UserPage.FirstOrDefaultAsync(m => m.Id == item);
+                    var _linkedPage = await _controlPage.Read(item);
+                    
+
                     if (_linkedPage != null)
                     {
                         _links.Add(new Links(_linkedPage.title, GetLink(item.ToString())));
