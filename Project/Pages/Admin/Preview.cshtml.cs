@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,9 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PublicSchoolProj.Pages.Admin
 {
+    [Authorize]
     public class PreviewModel : PageModel
     {
         private readonly UserPageController _controlPage;
@@ -31,10 +33,6 @@ namespace PublicSchoolProj.Pages.Admin
             {
                 return NotFound();
             }
-            if (!User.Identity.IsAuthenticated)
-            {
-                return RedirectToPage("/Admin/Index");
-            }
 
             var userpage = await _controlPage.Read((int)id);
             if (userpage == null)
@@ -43,38 +41,8 @@ namespace PublicSchoolProj.Pages.Admin
             }
             UserPage = userpage;
 
-            //await SetUpLinks();
-
             return Page();
         }
 
-        // API handles it now
-        /*
-        private async Task SetUpLinks()
-        {
-            if (UserPage == null) return;
-            if (UserPage.links == null) return;
-
-            if (UserPage.links.Count > 0)
-            {
-                List<Links> _links = new List<Links>();
-                foreach (var item in UserPage.GetLinks())
-                {
-                    
-                    var _linkedPage = await _controlPage.Read(item);
-                    if (_linkedPage != null)
-                    {
-                        _links.Add(new Links(_linkedPage.title, GetLink(item.ToString())));
-                    }
-                }
-                UserPage._listOfLinks = _links;
-            }
-        }
-        */
-        private string GetLink(string _id)
-        {
-            if (_id == null) return "";
-            return "Admin/Preview?id=" + _id;
-        }
     }
 }

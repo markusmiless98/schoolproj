@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Humanizer;
+﻿using Humanizer;
 using Humanizer.Localisation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,9 +11,15 @@ using PublicCssAPI.Handler;
 using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PublicSchoolProj.Pages.Admin
 {
+    [Authorize]
     public class EditModel : PageModel
     {
         private readonly UserPageController _controlPage;
@@ -54,10 +56,7 @@ namespace PublicSchoolProj.Pages.Admin
             {
                 return NotFound();
             }
-            if (!User.Identity.IsAuthenticated)
-            {
-                return RedirectToPage("/Admin/Index");
-            }
+            
 
             await GetUserPageById((int)id);
             if (UserPage == null)

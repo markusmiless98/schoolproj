@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "UserPages";
+    bool _willShowDebug = false;
 }
 
 <h1>UserPages</h1>
@@ -37,6 +38,7 @@
                             {
                                 <a asp-page="UserPages" asp-route-id="@item.Id">@_title</a>
                             }
+                   
                         }
                         else
                         {
@@ -55,42 +57,46 @@
     <partial name="CustomPage" for="@Model.UserPages[i]" />
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UserPages[0].userId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserPages[0].title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserPages[0].description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserPages[0].views)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.UserPages)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.userId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.views)
-            </td>
+@if (_willShowDebug)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserPages[0].userId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserPages[0].title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserPages[0].description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserPages[0].views)
+                </th>
+                <th></th>
             </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.UserPages)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.userId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.views)
+                    </td>
+                </tr>
 
-        }
-    </tbody>
-</table>
+            }
+        </tbody>
+    </table>
+
+}

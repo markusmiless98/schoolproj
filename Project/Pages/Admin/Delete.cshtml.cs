@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PublicSchoolProj.Pages.Admin
 {
+    [Authorize]
     public class DeleteModel : PageModel
     {
         private readonly UserPageController _controlPage;
@@ -30,10 +32,6 @@ namespace PublicSchoolProj.Pages.Admin
             if (id == null)
             {
                 return NotFound();
-            }
-            if (!User.Identity.IsAuthenticated)
-            {
-                return RedirectToPage("/Admin/Index");
             }
 
             var userpage = await _controlPage.Read((int)id);
