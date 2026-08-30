@@ -2,6 +2,7 @@
 @model PublicSchoolProj.Pages.Admin.CreateModel
 @using PublicDatabaseAPI.Controllers
 @inject PublicDatabaseAPI.Controllers.IUserPageController userPageController;
+@inject PublicDatabaseAPI.Service.IUserPageService userPageService;
 
 @{
     ViewData["Title"] = "Create";
@@ -10,11 +11,11 @@
 
 <h1>Create</h1>
 
-<h4>UserPage</h4>
+<h4>UserPage w/ @_val</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post" asp-route="UserPage" id="form">
+        <form method="post" id="form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" value="@_val" id="Id" />
             <input type="hidden" value="0" id="views" />
@@ -38,6 +39,7 @@
             </div>
         </form>
     </div>
+
 </div>
 
 <div>

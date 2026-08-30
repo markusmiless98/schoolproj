@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
+using PublicDatabaseAPI.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,14 @@ namespace PublicSchoolProj.Pages.Admin
     {
         private readonly UserPageController _controlPage;
         private readonly UserPageBlockController _controlBlock;
+        private readonly UserPageService _pageService;
 
-        public DeleteModel(IUserPageController _page, IUserPageBlockController _block)
+        //public DeleteModel(IUserPageController _page, IUserPageBlockController _block)
+        public DeleteModel(IUserPageService pageService)
         {
-            _controlPage = (UserPageController) _page;
-            _controlBlock = (UserPageBlockController) _block;
+            //_controlPage = (UserPageController) _page;
+            //_controlBlock = (UserPageBlockController) _block;
+            _pageService = (UserPageService)pageService;
         }
 
         [BindProperty]
@@ -34,7 +38,7 @@ namespace PublicSchoolProj.Pages.Admin
                 return NotFound();
             }
 
-            var userpage = await _controlPage.Read((int)id);
+            var userpage = await _pageService.GetPageAsync((int)id);
 
             if (userpage == null)
             {
@@ -44,6 +48,7 @@ namespace PublicSchoolProj.Pages.Admin
             {
                 UserPage = userpage;
             }
+
             return Page();
         }
 
@@ -54,6 +59,7 @@ namespace PublicSchoolProj.Pages.Admin
                 return NotFound();
             }
 
+            /*
             var userpage = await _controlPage.Read((int)id);
             if (userpage != null)
             {
@@ -74,9 +80,12 @@ namespace PublicSchoolProj.Pages.Admin
 
                 await _controlPage.Delete(UserPage.Id);
             }
-
+            */
+            await _pageService.DeletePageAsync((int)id);
+            
             return RedirectToPage("./Index");
         }
+        // Unused
         public async Task<IActionResult> OnPostDeleteAllAsync(int? id)
         {
             if (id == null)

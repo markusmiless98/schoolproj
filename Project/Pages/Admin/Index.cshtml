@@ -1,6 +1,7 @@
 ﻿@page
 @model PublicSchoolProj.Pages.Admin.IndexModel
 @inject PublicDatabaseAPI.Controllers.IUserPageController userPageController;
+@inject PublicDatabaseAPI.Service.IUserPageService pageService;
 
 @{
     ViewData["Title"] = "Page Index";

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
+using PublicDatabaseAPI.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,18 +16,18 @@ namespace PublicSchoolProj.Pages.Admin
     [Authorize]
     public class IndexModel : PageModel
     {
-        private readonly UserPageController _controlPage;
+        private readonly UserPageService _service;
 
-        public IndexModel(IUserPageController context)
+        public IndexModel(IUserPageService pageService)
         {
-            _controlPage = (UserPageController)context;
+            _service = (UserPageService)pageService;
         }
 
         public IList<UserPage> UserPage { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            UserPage = await _controlPage.ReadAll();
+            UserPage = await _service.GetAllPagesAsync();
         }
     }
 }

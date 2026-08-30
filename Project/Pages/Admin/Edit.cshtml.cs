@@ -11,6 +11,7 @@ using PublicCssAPI.Handler;
 using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
+using PublicDatabaseAPI.Service;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,12 +24,14 @@ namespace PublicSchoolProj.Pages.Admin
     public class EditModel : PageModel
     {
         private readonly UserPageController _controlPage;
+        private readonly UserPageService _pageService;
         private readonly UserPageBlockController _controlBlock;
 
-        public EditModel(ApplicationDbContext context)
+        public EditModel(IUserPageController userPageController, IUserPageBlockController userPageBlockController, IUserPageService pageService)
         {
-            _controlPage = context.GetUserPageController();
-            _controlBlock = context.GetUserPageBlockController();
+            _controlPage = (UserPageController)userPageController;
+            _controlBlock = (UserPageBlockController)userPageBlockController;
+            _pageService = (UserPageService)pageService;
         }
 
         [BindProperty]
@@ -69,6 +72,7 @@ namespace PublicSchoolProj.Pages.Admin
             Images = await GetListOfImages();
 
             SelectedPic = new List<string>();
+
             foreach (var item in UserPageBlocks)
             {
                 if (item.IsImagePathValid())
@@ -163,7 +167,8 @@ namespace PublicSchoolProj.Pages.Admin
 
         private async Task GetUserPageById(int id, bool get_blocks = true)
         {
-            var userpage = await _controlPage.Read(id);
+            //var userpage = await _controlPage.Read(id);
+            var userpage = await _pageService.GetPageAsync(id);
 
             if (userpage == null)
             {

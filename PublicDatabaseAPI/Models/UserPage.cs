@@ -167,6 +167,8 @@ namespace PublicDatabaseAPI.Models
 
         public virtual void OverWrite(UserPage _page)
         {
+            if (_page == null) return;
+
             if (_page.userId != null)
             {
                 this.userId = _page.userId;
@@ -178,6 +180,14 @@ namespace PublicDatabaseAPI.Models
             if (_page.description != null)
             {
                 this.description = _page.description;
+            }
+            if (_page.views != null)
+            {
+                this.views = _page.views;
+            }
+            else if (this.views == null)
+            {
+                this.views = 0;
             }
             if (_page.GetBlocks() != null)
             {

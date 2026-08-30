@@ -3,10 +3,8 @@
 using Microsoft.EntityFrameworkCore;
 using PublicDatabaseAPI.Data;
 using PublicDatabaseAPI.Models;
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace PublicDatabaseAPI.Controllers
 {
@@ -38,9 +36,9 @@ namespace PublicDatabaseAPI.Controllers
         }
     }
 
-    [Route("/UserPage")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class UserPageController : IUserPageController
+    public class UserPageController : ControllerBase, IUserPageController
     {
         private readonly ApplicationDbContext _context;
         private List<UserPage> _userpages = new List<UserPage>();
@@ -53,6 +51,10 @@ namespace PublicDatabaseAPI.Controllers
                 throw new Exception("No DB Context given");
             }
             _context = context;
+            // DB <-> repo <-> service <-> api(controller) <-> service <-> frontend
+            // HTTPClient in service
+            // Onion
+
             //Debug.WriteLine("--Created: User Page Controller");
         }
 
@@ -65,29 +67,39 @@ namespace PublicDatabaseAPI.Controllers
             _active = true;
         }
 
-        public async Task Create()
+        // POST: api/UserPage
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] object? userpage)
         {
             UserPage _page = new UserPage();
-            _page.title = "Page";
-            _page.description = "";
-            _page.views = 0;
-            _page.Id = await GetUserPageId();
+
+            _page.OverWrite(JsonSerializer.Deserialize<UserPage>(userpage.ToString()));
 
             await Create(_page);
+
+            return Ok();
         }
 
-        // GET: /UserPage
-        [HttpPost]
-        public async Task Create([FromBody] UserPage userpage)
+
+        // public async Task<IActionResult> Create([FromBody] UserPage userpage)
+        public async Task<IActionResult> Create(UserPage userpage)
         {
             if (IsNotActive()) await SetUpCache();
-            
-            _context.Attach(userpage).State = EntityState.Added;
+            //UserPage userpage = JsonSerializer.Deserialize<UserPage>(_json);
+
+            UserPage _page = new UserPage();
+            _page.OverWrite(userpage);
 
             try
             {
+                //_context.Add(userpage);
+
+                //_page.Id = await GetUserPageId();
+
+                _context.UserPage.Add(_page);
+                //_context.UserPage.Attach(_page).State = EntityState.Added;
+                _userpages.Add(_page);
                 await _context.SaveChangesAsync();
-                _userpages.Add(userpage);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -100,6 +112,8 @@ namespace PublicDatabaseAPI.Controllers
                     throw;
                 }
             }
+
+            return Ok();
         }
 
         // GET: /UserPage
@@ -158,7 +172,6 @@ namespace PublicDatabaseAPI.Controllers
 
             if (_page != null)
             {
-
                 _context.Attach(_page).State = EntityState.Deleted;
 
                 try
@@ -192,7 +205,7 @@ namespace PublicDatabaseAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task Update(UserPage modifier_page)
+        public async Task Update([FromBody] UserPage modifier_page)
         {
             if (IsNotActive()) await SetUpCache();
 
@@ -223,6 +236,8 @@ namespace PublicDatabaseAPI.Controllers
                 }
             }
         }
+
+        // PUT: api/UserPage
         [HttpPut]
         public async Task Update(UserPageBlock _block)
         {

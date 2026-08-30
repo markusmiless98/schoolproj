@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PublicDatabaseAPI.Controllers;
 using PublicDatabaseAPI.Data;
+using PublicDatabaseAPI.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +18,12 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHttpClient("UserPage", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:44386");
+    client.BaseAddress = new Uri("https://localhost:44386/");
 });
 
 builder.Services.AddScoped<IUserPageController, UserPageController>();
 builder.Services.AddScoped<IUserPageBlockController, UserPageBlockController>();
+builder.Services.AddScoped<IUserPageService, UserPageService>();
 
 builder.Services.AddControllers();
 

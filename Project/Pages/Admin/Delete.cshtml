@@ -2,6 +2,7 @@
 @model PublicSchoolProj.Pages.Admin.DeleteModel
 @inject PublicDatabaseAPI.Controllers.IUserPageController userPageController;
 @inject PublicDatabaseAPI.Controllers.IUserPageBlockController userPageBlockController;
+@inject PublicDatabaseAPI.Service.IUserPageService pageService;
 
 @{
     ViewData["Title"] = "Delete";
